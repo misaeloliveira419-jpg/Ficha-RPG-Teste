@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=0.4, minimum-scale=0.4, maximum-scale=1.0" meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css"/>
+    <title>Ficha RPG</title>
+</head>
+<body>
+  
+    <div class="area-site">
+
+<div class="ficha">
+
+    <header>
+
+    <div class="cabecalho-principal">
+
+        <div class="area-foto-personagem" id="area-foto-personagem">
+
+            <img id="imagem-personagem" alt="Foto do personagem">
+
+            <span id="texto-foto">+</span>
+
+            <input type="file" id="input-foto-personagem" accept="image/*" hidden>
+
+        </div>
+
+        <div class="dados-personagem">
+
+            <div class="linha">
+                <label for="jogador">Jogador:</label>
+                <input type="text" id="jogador" class="campo-texto">
+            </div>
+
+            <div class="linha">
+                <label for="personagem">Personagem:</label>
+                <input type="text" id="personagem" class="campo-texto">
+            </div>
+
+        </div>
+
+        </div>
+
+        <button id="btn-menu">☰</button>
+
+    </header>
+
+    <div class="bloco historia">
+
+        <div class="titulo-secao">
+            <button class="btn-secao">▼</button>
+            <h1>DESCRIÇÃO</h1>
+        </div>
+
+        <div class="conteudo-secao">
+            <textarea id="texto-historia" placeholder="Digite a descrição do personagem aqui..."></textarea>
+        </div>
+
+    </div>
+
+    <div id="menu-lateral">
+
+        <button id="abrir-lista">
+            Todas as suas fichas
+        </button>
+
+        <button id="criar-ficha">
+            Criar ficha
+        </button>
+
+        <button id="deletar-ficha">
+            Deletar ficha
+        </button>
+
+        <button id="compartilhar-ficha">
+            Compartilhar ficha
+        </button>
+
+    </div>
+
+    <div id="tela-fichas">
+
+    <h1>SUAS FICHAS</h1>
+
+    <div id="lista-fichas"></div>
+
+    <button id="nova-ficha-lista">+</button>
+
+    <button id="voltar-ficha">← Voltar</button>
+
+</div>
+
+    <main>
+
+        <section class="esquerda">
+
+            <div class="bloco atributos">
+
+                <div class="titulo-secao">
+                    <button class="btn-secao">▼</button>
+                    <h1>ATRIBUTOS</h1>
+                </div>
+
+                <div class="conteudo-secao">
+
+                    <div class="contador-atributos">
+                        <input type="number" class="valor-contador" value="0" min="0">
+                        <span>/</span>
+                        <input type="number" class="maximo-contador" value="10" min="1">
+                    </div>
+
+                    <div class="atributo vermelho">
+                        <span class="des">Destreza (DES)</span>
+                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                    </div>
+
+                    <div class="atributo marrom">
+                        <span class="for">Força (FOR)</span>
+                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                    </div>
+
+                    <div class="atributo cinza">
+                        <span class="int">Intelecto (INT)</span>
+                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                    </div>
+
+                    <div class="atributo amarelo">
+                        <span class="pre">Presença (PRE)</span>
+                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                    </div>
+
+                    <div class="atributo azul">
+                        <span class="vig">Vigor (VIG)</span>
+                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                    </div>
+                  
+                    <div class="deslocamento">
+                      <span class="movimento">Deslocamento</span>
+                      <div class="campo-unidade" id="campo-metro">
+                        <input class="valor-metro" type="number" min="1" step="1" value="9">
+                        <span class="medida-metro">m</span>
+                      </div>
+                      <span id="separador">/</span>
+                      <div class="campo-unidade" id="campo-quadrado">
+                        <input class="valor-quadrado" type="number" readonly>
+                        <span class="medida-quadrado">q</span>
+                      </div>
+                    </div>
+                  
+                  <div class="atributo sorte">
+                    <span id="sor">P. de Sorte</span>
+                    <input id="quadrado-sorte" type="number" min="0" value="0">
+                  </div>
+
+                </div>
+
+            </div>  
+
+            <div class="bloco pontos">
+
+                <div class="status">
+                    <span>P. de Vida</span>
+
+                    <div class="barra">
+                        <div class="preenchimento vida"></div>
+
+                        <div class="texto">
+                            <input type="number" class="atual" value="10" min="0">
+                            /
+                            <input type="number" class="maximo" value="10" min="1">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="status">
+                  <span>P. de Determinação</span>
+                      <div class="barra">
+                        <div class="preenchimento determinacao"></div>
+                        <div class="texto">
+                          <input type="number" class="atual" value="33" min="0">
+                          /
+                          <input type="number" class="maximo" value="33" min="1">
+                        </div>
+                      </div>
+                </div>
+            </div>
+
+            <div class="bloco habilidades">
+
+                <div class="titulo-secao">
+                  <button class="btn-secao">▼</button>
+                    <h1>HABILIDADES</h1>
+                </div>
+
+                <div class="conteudo-secao">
+
+                    <div id="lista-habilidades"></div>
+
+                    <button id="adicionar-habilidade">+</button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="direita">
+
+            <div class="bloco pericias">
+
+                <div class="titulo-secao">
+                    <button class="btn-secao">▼</button>
+                    <h1>PERÍCIAS</h1>
+                </div>
+
+            <div class="conteudo-secao">
+
+                <div class="contador-pericias">
+                    <input type="number" class="valor-contador" value="0" min="0">
+                    <span>/</span>
+                    <input type="number" class="maximo-contador" value="130" min="1">
+                </div>
+
+                <div class="pericia" data-id="acro"><span>Acrobacia</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="ades"><span>Adestramento</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="art"><span>Artes</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="atle"><span>Atletismo</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="atual"><span>Atualidades</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="cien"><span>Ciências</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="cond"><span>Condução</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="crim"><span>Crime</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="diplo"><span>Diplomacia</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="engan"><span>Enganação</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="forti"><span>Fortitude</span><span class="atributo-pericia vig">(VIG)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="furtiv"><span>Furtividade</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="inici"><span>Iniciativa</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="intim"><span>Intimidação</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="intui"><span>Intuição</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="invest"><span>Investigação</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="lut"><span>Luta</span><span class="atributo-pericia for">(FOR)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="med"><span>Medicina</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="percep"><span>Percepção</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="pont"><span>Pontaria</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="refl"><span>Reflexo</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="relig"><span>Religião</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="sedu"><span>Sedução</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="sobrev"><span>Sobrevivência</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="tecno"><span>Tecnologia</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="vont"><span>Vontade</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+
+                <div class="conhecimento-especifico">
+                  <span>C. Específicos</span>
+                  <select id="conhecimento-especifico-select">
+                    <option value="">Escolha uma perícia</option>
+                  </select>
+                  <input
+                    id="bonus-conhecimento-especifico"
+                    type="text"
+                    value="+2"
+                    readonly
+                  >
+                </div>
+              
+            </div>
+
+            </div>
+
+            <div class="bloco inventario">
+
+                <div class="titulo-secao">
+                    <button class="btn-secao">▼</button>
+                    <h1>INVENTÁRIO</h1>
+                </div>
+
+                <div class="conteudo-secao">
+
+                    <div class="contador-carga">
+                        <input type="number" class="valor-contador" value="0">
+                        <span>/</span>
+                        <input type="number" class="maximo-contador" value="7">
+                    </div>
+
+                    <div id="lista-itens"></div>
+
+                    <button id="adicionar-item">+</button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+      
+<aside id="painel-rolagens">
+
+    <div class="layout-rolagens">
+
+        <section class="coluna-rolagem">
+
+            <h1>ROLAGEM DE DADOS</h1>
+
+            <div class="escolha-tipo-teste">
+
+                <button
+                    class="tipo-teste ativo"
+                    data-tipo="pericia"
+                >
+                    Teste de perícia
+                </button>
+
+                <button
+                    class="tipo-teste"
+                    data-tipo="soma"
+                >
+                    Teste de soma
+                </button>
+
+            </div>
+
+            <div id="area-teste-pericia">
+
+                <label>Perícia</label>
+                <div class="linha-pericia-rolagem">
+                  <input
+                    id="pericia-rolagem"
+                    list="lista-pericias-rolagem"
+                    placeholder="Pesquisar perícia..."
+                    autocomplete="off"
+                  >
+                  
+                  <div class="dados-temporarios-pericia">
+                    <input
+                      id="quantidade-dados-pericia"
+                      type="number"
+                      min="1"
+                      step="1"
+                      value="1"
+                    >
+                    
+                    <span>d20</span>
+                    
+                  </div>
+                  
+                  <input
+                    id="valor-pericia-rolagem"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value="1"
+                    title="Valor temporário da perícia"
+                  >
+                </div>
+              
+              <datalist id="lista-pericias-rolagem"></datalist>
+            </div>
+
+            <div id="area-teste-soma">
+              <div id="grupos-dados"></div>
+                  <div class="bonus-soma">
+                    <span>+</span>
+                    <input id="bonus-soma" type="number" min="1" step="1" placeholder="Bônus">
+                  </div>
+              <button id="adicionar-grupo-dado">+</button>
+            </div>
+
+            <button id="botao-rolar">
+                ROLAR
+            </button>
+
+            <div id="dados-rolados"></div>
+
+            <div id="resultado-rolagem">
+
+                <div id="numero-resultado">—</div>
+
+                <div id="nivel-sucesso"></div>
+
+            </div>
+
+
+            <button id="salvar-teste">
+                Salvar teste
+            </button>
+
+
+            <div class="rolagens-salvas">
+
+                <h2>ROLAGENS SALVAS</h2>
+
+                <div id="lista-rolagens-salvas"></div>
+
+            </div>
+
+        </section>
+
+
+        <section class="coluna-historico">
+
+            <h1>HISTÓRICO DE ROLAGENS</h1>
+
+            <div id="historico-rolagens"></div>
+
+        </section>
+
+    </div>
+
+</aside>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
