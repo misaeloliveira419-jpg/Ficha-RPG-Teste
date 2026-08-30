@@ -2,15 +2,38 @@
 
 <html lang="pt-BR">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=0.4, minimum-scale=0.4, maximum-scale=1.0" meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.4, minimum-scale=0.4, maximum-scale=1.0">
   <link rel="stylesheet" href="style.css"/>
     <title>Ficha RPG</title>
 </head>
 <body>
+  <div id="tela-login">
+    <div class="caixa-login">
+      <div id="area-login">
+        <h1>ENTRAR</h1>
+        <input id="login-email" type="email" placeholder="E-mail" autocomplete="email">
+        <input id="login-senha" type="password" placeholder="Senha" autocomplete="current-password">
+        <button id="botao-login">Entrar</button>
+        <div id="erro-login"></div>
+        <button id="abrir-cadastro" type="button" class="botao-secundario-login">Criar conta</button>
+      </div>
+      <div id="area-cadastro" style="display:none;">
+        <h1>CRIAR CONTA</h1>
+        <input id="cadastro-nome" type="text" placeholder="Seu nome" autocomplete="name">
+        <input id="cadastro-email" type="email" placeholder="E-mail" autocomplete="email">
+        <input id="cadastro-senha" type="password" placeholder="Senha" autocomplete="new-password">
+        <input id="cadastro-confirmar-senha" type="password" placeholder="Confirmar senha" autocomplete="new-password">
+        <button id="botao-cadastro">Criar conta</button>
+        <div id="erro-cadastro"></div>
+          <button id="voltar-login" type="button" class="botao-secundario-login">Voltar para entrar</button>
+      </div>
+    </div>
+  </div>
   
-    <div class="area-site">
+  <div class="area-site">
 
-<div class="ficha">
+  <div class="ficha">
 
     <header>
 
@@ -37,10 +60,24 @@
                 <label for="personagem">Personagem:</label>
                 <input type="text" id="personagem" class="campo-texto">
             </div>
-
+            
+            <div id="controle-tipo-ficha">
+              <label for="tipo-ficha">Tipo de ficha</label>
+              <select id="tipo-ficha">
+                <option value="jogador">Jogador</option>
+                <option value="npc">NPC</option>
+                <option value="criatura">Criatura</option>
+              </select>
+            </div>
+          
+            <div id="controle-dono-ficha">
+              <label for="dono-ficha">Dono da ficha:</label>
+              <select id="dono-ficha">
+                <option value="">Não atribuída</option>
+              </select>
+            </div>
         </div>
-
-        </div>
+    </div>
 
         <button id="btn-menu">☰</button>
 
@@ -61,22 +98,20 @@
 
     <div id="menu-lateral">
 
-        <button id="abrir-lista">
-            Todas as suas fichas
-        </button>
+        <button id="abrir-lista">Todas as suas fichas</button>
 
-        <button id="criar-ficha">
-            Criar ficha
-        </button>
+        <button id="criar-ficha">Criar ficha</button>
 
-        <button id="deletar-ficha">
-            Deletar ficha
-        </button>
+        <button id="deletar-ficha">Deletar ficha</button>
 
-        <button id="compartilhar-ficha">
-            Compartilhar ficha
-        </button>
-
+        <button id="compartilhar-ficha">Compartilhar ficha</button>
+      
+        <button id="sair-conta">Sair da conta</button>
+      
+        <button id="migrar-fichas-firestore" style="display:none;">Migrar fichas para o banco</button>
+      
+        <button id="migrar-fotos-firestore" style="display:none;">Migrar fotos antigas</button>
+      
     </div>
 
     <div id="tela-fichas">
@@ -107,32 +142,32 @@
                     <div class="contador-atributos">
                         <input type="number" class="valor-contador" value="0" min="0">
                         <span>/</span>
-                        <input type="number" class="maximo-contador" value="10" min="1">
+                        <input type="number" class="maximo-contador" value="8" min="1">
                     </div>
 
                     <div class="atributo vermelho">
                         <span class="des">Destreza (DES)</span>
-                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                        <input class="quadrado" type="number" min="0" max="4" value="1">
                     </div>
 
                     <div class="atributo marrom">
                         <span class="for">Força (FOR)</span>
-                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                        <input class="quadrado" type="number" min="0" max="4" value="1">
                     </div>
 
                     <div class="atributo cinza">
                         <span class="int">Intelecto (INT)</span>
-                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                        <input class="quadrado" type="number" min="0" max="4" value="1">
                     </div>
 
                     <div class="atributo amarelo">
                         <span class="pre">Presença (PRE)</span>
-                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                        <input class="quadrado" type="number" min="0" max="4" value="1">
                     </div>
 
                     <div class="atributo azul">
                         <span class="vig">Vigor (VIG)</span>
-                        <input class="quadrado" type="number" min="0" max="5" value="1">
+                        <input class="quadrado" type="number" min="0" max="4" value="1">
                     </div>
                   
                     <div class="deslocamento">
@@ -148,7 +183,7 @@
                       </div>
                     </div>
                   
-                  <div class="atributo sorte">
+                  <div class="atributo sorte" id="area-sorte">
                     <span id="sor">P. de Sorte</span>
                     <input id="quadrado-sorte" type="number" min="0" value="0">
                   </div>
@@ -174,7 +209,7 @@
                 </div>
 
 
-                <div class="status">
+                <div class="status" id="status-determinacao">
                   <span>P. de Determinação</span>
                       <div class="barra">
                         <div class="preenchimento determinacao"></div>
@@ -220,7 +255,7 @@
                 <div class="contador-pericias">
                     <input type="number" class="valor-contador" value="0" min="0">
                     <span>/</span>
-                    <input type="number" class="maximo-contador" value="130" min="1">
+                    <input type="number" class="maximo-contador" value="100" min="1">
                 </div>
 
                 <div class="pericia" data-id="acro"><span>Acrobacia</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
@@ -415,7 +450,25 @@
 
 <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
 
+
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+
+
+<script src="firebase-config.js"></script>
+
+<script src="auth.js"></script>
+  
 <script src="script.js"></script>
+  
+<script src="firebase-fotos.js"></script>
+
+<script src="firebase-fichas.js"></script>
+  
+<script src="firebase-mestre.js"></script> 
 
 </body>
 </html>

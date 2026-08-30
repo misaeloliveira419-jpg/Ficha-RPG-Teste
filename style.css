@@ -19,6 +19,139 @@ body{
     color:white;
 }
 
+#tela-login{
+    position:fixed;
+    inset:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:#080808;
+
+    z-index:99999;
+}
+
+#area-login,
+#area-cadastro{
+
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+
+}
+
+
+#area-login h1,
+#area-cadastro h1{
+
+    margin:0 0 10px;
+
+    text-align:center;
+
+}
+
+
+#area-login input,
+#area-cadastro input{
+
+    height:42px;
+
+    padding:0 12px;
+
+    font-size:16px;
+
+}
+
+
+#botao-login,
+#botao-cadastro{
+
+    height:44px;
+
+    font-size:17px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+.botao-secundario-login{
+
+    height:40px;
+
+    background:#222;
+    color:white;
+
+    border:1px solid white;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+}
+
+
+.botao-secundario-login:hover{
+
+    background:#333;
+
+}
+
+
+#erro-login,
+#erro-cadastro{
+
+    min-height:20px;
+
+    text-align:center;
+
+}
+
+.caixa-login{
+    width:320px;
+
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+
+    padding:30px;
+
+    border:2px solid white;
+
+    background:#111;
+}
+
+.caixa-login h1{
+    margin:0 0 10px;
+
+    text-align:center;
+}
+
+.caixa-login input{
+    height:42px;
+
+    padding:0 12px;
+
+    font-size:16px;
+}
+
+#botao-login{
+    height:44px;
+
+    font-size:17px;
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+#erro-login{
+    min-height:20px;
+
+    text-align:center;
+}
+
 .ficha{
 
     width:1000px;
@@ -885,8 +1018,76 @@ main{
 #menu-lateral button:hover{
 
     background:white;
-
     color:black;
+}
+
+#controle-tipo-ficha{
+
+    display:none;
+    align-items:center;
+    gap:18px;
+    margin-top:5px;
+}
+
+
+#controle-tipo-ficha label{
+
+    font-size:22px;
+    font-weight:bold;
+    min-width:170px;
+}
+
+
+#tipo-ficha{
+
+    flex:1;
+    height:40px;
+    border:none;
+    border-bottom:2px solid white;
+    background:black;
+    color:white;
+    font-size:20px;
+    font-family:"Times New Roman", Times, serif;
+    padding:3px 6px;
+    outline:none;
+    cursor:pointer;
+}
+#tipo-ficha:focus{
+    
+    border-bottom:3px solid rgb(175,175,175);
+}
+
+#controle-dono-ficha{
+
+    display:none;
+    margin-top:8px;
+}
+
+#controle-dono-ficha label{
+
+    display:block;
+    margin-bottom:5px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+#dono-ficha{
+
+    width:100%;
+    height:38px;
+    border:none;
+    border-bottom:2px solid white;
+    background:black;
+    color:white;
+    font-size:18px;
+    font-family:"Times New Roman", Times, serif;
+    outline:none;
+    cursor:pointer;
+}
+
+#dono-ficha:focus{
+    
+    border-bottom:3px solid rgb(175,175,175);
 }
 
 #deletar-ficha{
@@ -1132,6 +1333,7 @@ main{
     min-width:max-content;
     margin:0;
     padding-right:40px;
+    visibility: hidden;
 }
 
 
