@@ -307,7 +307,7 @@ main{
 
     width:55px;
     height:55px;
-    border:2px solid currentColor;
+    border: 2px solid;
     border-radius:6px;
     text-align:center;
     font-size:28px;
@@ -335,7 +335,11 @@ main{
 
 .movimento{
     
-    color: rgb(200,135,35);
+    background-image: linear-gradient(rgb(230,160,50),rgb(200,135,35),rgb(140,110,0));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
 }
 
 .contador-movimento{
@@ -429,15 +433,19 @@ main{
 
     width:55px;
     height:55px;
-    border:2px solid currentColor;
+    border:2px solid rgb(90,0,225);
     border-radius:6px;
     text-align:center;
     font-size:28px;
     font-weight:bold;
     font-family:"Times New Roman", Times, serif;
     background:black;
-    color:inherit;
     outline:none;
+    background-image: linear-gradient(rgb(150,0,250),rgb(90,0,225),rgb(60,0,175));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
 }
 
 #quadrado-sorte:focus{
@@ -710,15 +718,43 @@ main{
     color:black;
 }
 
-.marrom{color:#9c4f00;}
-.cinza{color:#777;}
-.amarelo{color:#b5b500;}
-.sorte, #sor{color:rgb(90,0,225)}
+#sor{
+    
+    background-image: linear-gradient(rgb(150,0,250),rgb(90,0,225),rgb(60,0,175));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+}
 .verde{color:#00aa1b;}
 
-.fis{color:#9c4f00;}
-.int{color:#777;}
-.pre{color:#b5b500;}
+.fis{
+    
+    background-image: linear-gradient(rgb(180,70,0),rgb(210,70,50),rgb(100,150,175));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    border-color: rgb(210,70,50);
+}
+.int{
+    
+    background-image: linear-gradient(rgb(200,200,200),rgb(150,150,150),rgb(100,100,100));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    border-color: rgb(150,150,150);
+}
+.pre{
+    
+    background-image: linear-gradient(rgb(225,225,25),rgb(150,175,100),rgb(75,100,125));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    border-color: rgb(150,175,100);
+}
 
 .status{
 
@@ -760,7 +796,7 @@ main{
 }
 
 .determinacao{
-    background: linear-gradient(rgb(100,100,255), rgb(75,40,200));
+    background: linear-gradient(rgb(100,100,255),rgb(75,40,200));
 }
 
 .pontos{
