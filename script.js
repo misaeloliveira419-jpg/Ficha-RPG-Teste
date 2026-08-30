@@ -174,7 +174,7 @@ const atributos = document.querySelectorAll(".quadrado");
 atributos.forEach(input => {
     input.addEventListener("input", () => {
         let valor = Number(input.value);
-        if (valor > 3) input.value = 3;
+        if (valor > 4) input.value = 4;
         if (valor < 0) input.value = 0;
         atualizarFicha();
     });
@@ -741,174 +741,8 @@ function criarFichaNova(){
     }
 }
 
-function obterChaveBanco(){
-    const uid = window.usuarioAtual?.uid || window.auth?.currentUser?.uid;
-    if(!uid){
-        return null;
-    }
-    return "BancoFichasRPG_" + uid;
-}
-
 function salvarBanco(){
-    if(window.mestreUsandoFirestoreDireto || window.jogadorUsandoFirestoreDireto){
-        return;
-    }
-    const chave = obterChaveBanco();
-    if(!chave){
-        return;
-    }
-    localStorage.setItem(chave, JSON.stringify(banco)
-    );
-}
-
-function carregarBanco(){
-
-    const chave = obterChaveBanco();
-    if(!chave){
-        return;
-    }
-    banco = {
-        atual:null,
-        fichas:[]
-    };
-    let salvo =
-    localStorage.getItem(chave);
-    if(window.papelUsuario === "mestre"){
-    const bancoAntigo = localStorage.getItem("BancoFichasRPG");
-        const chaveMigracao = "BancoFichasRPG_MIGRADO_" + window.usuarioAtual.uid;
-        const jaMigrou = localStorage.getItem(chaveMigracao) === "1";
-        if(bancoAntigo && !jaMigrou){
-            try{
-                const dadosAntigos = JSON.parse(bancoAntigo);
-                const dadosNovos = salvo ? JSON.parse(salvo):{
-                    atual:null,
-                    fichas:[]
-                };
-                const fichas = new Map();
-            /*
-             * Primeiro recuperamos todas
-             * as fichas do banco antigo.
-             */
-            if(
-                Array.isArray(
-                    dadosAntigos.fichas
-                )
-            ){
-
-                dadosAntigos.fichas
-                .forEach(ficha => {
-
-                    fichas.set(
-                        String(ficha.id),
-                        ficha
-                    );
-
-                });
-
-            }
-
-
-            /*
-             * Depois mantemos também qualquer
-             * ficha já existente no novo banco.
-             */
-            if(
-                Array.isArray(
-                    dadosNovos.fichas
-                )
-            ){
-
-                dadosNovos.fichas
-                .forEach(ficha => {
-
-                    fichas.set(
-                        String(ficha.id),
-                        ficha
-                    );
-
-                });
-
-            }
-
-
-            const bancoCombinado = {
-
-                atual:
-                    dadosAntigos.atual ??
-                    dadosNovos.atual ??
-                    null,
-
-                fichas:
-                    [...fichas.values()]
-
-            };
-
-
-            salvo =
-                JSON.stringify(
-                    bancoCombinado
-                );
-
-
-            localStorage.setItem(
-                chave,
-                salvo
-            );
-
-
-            localStorage.setItem(
-                chaveMigracao,
-                "1"
-            );
-
-
-        }catch(erro){
-
-            alert(
-                "Não foi possível recuperar " +
-                "as fichas antigas: " +
-                erro.message
-            );
-
-        }
-
-    }
-
-}
-    if(salvo){
-
-        try{
-
-            const dados = JSON.parse(salvo);
-
-            if(dados && typeof dados === "object" && Array.isArray(dados.fichas)){
-
-                banco = {
-                    atual: dados.atual ?? null,
-                    fichas: dados.fichas.map(normalizarFicha)
-                };
-
-            }
-
-        }catch(erro){
-
-            console.error("Banco de fichas corrompido, iniciando um novo.", erro);
-
-        }
-
-    }
-
-    if(!banco || !Array.isArray(banco.fichas)){
-        banco = { atual: null, fichas: [] };
-    }
-    if(banco.fichas.length === 0 && window.papelUsuario !== "jogador"){
-        criarFichaNova();
-    }
-    if(banco.fichas.length > 0 && !banco.fichas.some(f=>f.id===banco.atual)){
-        banco.atual = banco.fichas[0].id;
-        salvarBanco();
-    }
-    atualizarBotaoExcluir();
+    return;
 }
 
 const TIPOS_FICHA = new Set(["jogador", "npc", "criatura"]);
@@ -1053,173 +887,876 @@ function normalizarFicha(ficha){
     ficha.rolagensSalvas = Array.isArray(ficha.rolagensSalvas) ? ficha.rolagensSalvas: [];
     return ficha;
 }
-
 function fichaAtual(){
-
     return banco.fichas.find(f=>f.id===banco.atual);
-
 }
 
-function codificarFicha(ficha) {
-
-    const json = JSON.stringify(ficha);
-
-    const bytes = new TextEncoder().encode(json);
-
-    let binario = "";
-
-    bytes.forEach(byte => {
-        binario += String.fromCharCode(byte);
-    });
-
-    const base64 = btoa(binario);
-
-    return encodeURIComponent(base64);
-}
+const FORMATO_ARQUIVO_FICHA =
+    "ficha-rpg-a-realidade";
 
 
-function decodificarFicha(dados) {
+const VERSAO_ARQUIVO_FICHA =
+    1;
 
-    const base64 = decodeURIComponent(dados);
 
-    const binario = atob(base64);
+/*
+ * Define em qual coleção está
+ * o documento principal da ficha.
+ */
+function obterColecaoCompartilhamento(
+    tipo
+){
 
-    const bytes = Uint8Array.from(
-        binario,
-        c => c.charCodeAt(0)
-    );
+    switch(tipo){
 
-    const json =
-        new TextDecoder().decode(bytes);
+        case "jogador":
+            return "fichasJogadores";
 
-    return JSON.parse(json);
-}
+        case "npc":
+            return "fichasNPC";
 
-function compartilharFicha() {
+        case "criatura":
+            return "fichasCriaturas";
 
-    salvarFichaAtual();
-
-    const ficha = fichaAtual();
-
-    if (!ficha) {
-
-        alert("Nenhuma ficha selecionada.");
-
-        return;
-    }
-
-    try {
-        
-        const fichaCompartilhada = {
-            ...ficha,
-            foto: ""
-        };
-        
-        const json = JSON.stringify(fichaCompartilhada);
-
-        const comprimido =
-            LZString.compressToEncodedURIComponent(json);
-
-        const url =
-            window.location.origin +
-            window.location.pathname +
-            "?f=" +
-            comprimido;
-
-        navigator.clipboard.writeText(url)
-            .then(() => {
-
-                alert(
-                    "Link da ficha copiado para a área de transferência!"
-                );
-
-            })
-            .catch(() => {
-
-                prompt(
-                    "Copie o link da ficha:",
-                    url
-                );
-
-            });
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        alert(
-            "Não foi possível criar o link da ficha."
-        );
-
-    }
-
-}
-
-document.getElementById("compartilhar-ficha").onclick = () => {
-
-    compartilharFicha();
-
-};
-
-function verificarFichaCompartilhada() {
-
-    const parametros =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    const dados =
-        parametros.get("f");
-
-    if (!dados) {
-        return;
-    }
-
-    try {
-
-        const json =
-            LZString.decompressFromEncodedURIComponent(
-                dados
+        default:
+            throw new Error(
+                "Tipo de ficha inválido."
             );
 
-        if (!json) {
+    }
+
+}
+
+
+/*
+ * Remove caracteres que não são
+ * apropriados para nomes de arquivo.
+ */
+function limparNomeArquivoFicha(
+    nome
+){
+
+    const nomeLimpo =
+        String(
+            nome || "Ficha"
+        )
+        .replace(
+            /[\\/:*?"<>|]/g,
+            "-"
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim()
+        .slice(
+            0,
+            80
+        );
+
+
+    return nomeLimpo || "Ficha";
+
+}
+
+
+/*
+ * Gera um ID que ainda não existe
+ * na sessão atual.
+ */
+function gerarNovoIdFicha(){
+
+    let id =
+        Date.now();
+
+
+    while(
+        banco.fichas.some(
+            ficha =>
+                String(ficha.id) ===
+                String(id)
+        )
+    ){
+
+        id++;
+
+    }
+
+
+    return id;
+
+}
+
+
+/*
+ * Faz uma gravação imediata antes
+ * do compartilhamento.
+ *
+ * Assim o arquivo é criado a partir
+ * da versão mais recente do Firestore.
+ */
+async function garantirFichaSalvaParaCompartilhar(
+    ficha
+){
+
+    if(
+        window.papelUsuario ===
+        "mestre"
+    ){
+
+        if(
+            typeof window
+                .salvarFichaMestreNoFirestore
+            !== "function"
+        ){
 
             throw new Error(
-                "Não foi possível descomprimir a ficha."
+                "Sistema do Mestre não carregado."
             );
 
         }
 
-        const ficha =
-            normalizarFicha(JSON.parse(json));
 
-        const resposta =
-            confirm(
-                "Uma ficha foi compartilhada com você!\n\n" +
-                "Personagem: " +
-                (ficha.personagem || "Sem nome") +
-                "\n\n" +
-                "Deseja importar esta ficha?"
+        await window
+            .salvarFichaMestreNoFirestore(
+                ficha
             );
 
-        if (!resposta) {
 
+        return;
+
+    }
+
+
+    if(
+        window.papelUsuario ===
+        "jogador"
+    ){
+
+        if(
+            typeof window
+                .salvarFichaJogadorNoFirestore
+            !== "function"
+        ){
+
+            throw new Error(
+                "Sistema de fichas não carregado."
+            );
+
+        }
+
+
+        const sucesso =
+            await window
+                .salvarFichaJogadorNoFirestore(
+                    ficha
+                );
+
+
+        if(sucesso === false){
+
+            throw new Error(
+                "A ficha não pôde ser salva."
+            );
+
+        }
+
+
+        return;
+
+    }
+
+
+    throw new Error(
+        "Usuário inválido."
+    );
+
+}
+
+
+/*
+ * Busca a versão oficial da ficha
+ * diretamente do Firestore.
+ */
+async function montarArquivoCompartilhavel(
+    fichaAtualLocal
+){
+
+    await garantirFichaSalvaParaCompartilhar(
+        fichaAtualLocal
+    );
+
+
+    const id =
+        String(
+            fichaAtualLocal.id
+        );
+
+
+    const colecao =
+        obterColecaoCompartilhamento(
+            fichaAtualLocal.tipo
+        );
+
+
+    const [
+        documentoFicha,
+        documentoFoto
+    ] =
+    await Promise.all([
+
+        db
+            .collection(
+                colecao
+            )
+            .doc(id)
+            .get(),
+
+        db
+            .collection(
+                "fotosFichas"
+            )
+            .doc(id)
+            .get()
+
+    ]);
+
+
+    if(!documentoFicha.exists){
+
+        throw new Error(
+            "A ficha não existe no Firestore."
+        );
+
+    }
+
+
+    const ficha =
+        JSON.parse(
+            JSON.stringify(
+                documentoFicha.data()
+            )
+        );
+
+
+    /*
+     * Informações internas nunca
+     * viajam para outra pessoa.
+     */
+    delete ficha.id;
+    delete ficha.dono;
+    delete ficha.ordem;
+    delete ficha.modificadoEm;
+    delete ficha.atualizadoEm;
+    delete ficha.fichaId;
+    delete ficha.sorte;
+
+
+    let foto =
+        "";
+
+
+    if(documentoFoto.exists){
+
+        const dadosFoto =
+            documentoFoto.data();
+
+
+        if(
+            typeof dadosFoto.foto
+            === "string"
+        ){
+
+            foto =
+                dadosFoto.foto;
+
+        }
+
+    }
+
+
+    return {
+
+        formato:
+            FORMATO_ARQUIVO_FICHA,
+
+        versao:
+            VERSAO_ARQUIVO_FICHA,
+
+        exportadoEm:
+            new Date()
+                .toISOString(),
+
+        ficha:
+            ficha,
+
+        foto:
+            foto
+
+    };
+
+}
+async function compartilharFicha(){
+    salvarFichaAtual();
+    const ficha = fichaAtual();
+    if(!ficha){
+        alert("Nenhuma ficha selecionada.");
+        return;
+    }
+    const botao = document.getElementById("compartilhar-ficha");
+    if(botao){
+        botao.disabled = true;
+        botao.textContent = "Preparando...";
+    }
+    try{
+        const pacote = await montarArquivoCompartilhavel(ficha);
+        const nomePersonagem = pacote.ficha.personagem || "Ficha";
+        const nomeArquivo = limparNomeArquivoFicha(nomePersonagem)+".ficharpg";
+        const conteudo = JSON.stringify(pacote, null, 2);
+        const arquivo = new File([conteudo], nomeArquivo, {
+            type: "application/json"
+        });
+        const podeCompartilhar = typeof navigator.share === "function" && (typeof navigator.canShare !== "function" || navigator.canShare({
+            files:[arquivo]
+        }));
+        if(podeCompartilhar){
+            await navigator.share({
+                title: "Ficha de " + nomePersonagem,
+                text: "Ficha de RPG",
+                files:[arquivo]
+            });
             return;
+        }
+        const url = URL.createObjectURL(arquivo);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = nomeArquivo;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 1000);
+        alert("Seu navegador não permite compartilhar " + "o arquivo diretamente.\n\n" + "A ficha foi salva como arquivo para você enviar.");
+    }
+    catch(erro){
+        if(erro?.name === "AbortError"){
+            return;
+        }
+        console.error(erro);
+        alert("Não foi possível compartilhar a ficha.\n\n" + erro.message);
+    }
+    finally{
+        if(botao){
+            botao.disabled = false;
+            botao.textContent = "Compartilhar ficha";
+        }
+    }
+}
+
+async function salvarFichaImportadaNoFirestore(
+    ficha
+){
+
+    if(
+        window.papelUsuario ===
+        "mestre"
+    ){
+
+        if(
+            typeof window
+                .salvarFichaMestreNoFirestore
+            !== "function"
+        ){
+
+            throw new Error(
+                "Sistema do Mestre não carregado."
+            );
 
         }
-        ficha.id = Date.now();
-        banco.fichas.push(ficha);
-        banco.atual = ficha.id;
-        salvarBanco();
-        carregarFichaAtual();
-        atualizarBotaoExcluir();
-        alert("Ficha importada com sucesso!");
-        window.history.replaceState({}, document.title, window.location.pathname);
+
+
+        await window
+            .salvarFichaMestreNoFirestore(
+                ficha
+            );
+
+
+        return;
+
     }
-    catch (erro){
-        console.error(erro);
-        alert("Não foi possível importar a ficha.\n\n" + "O link pode estar inválido ou corrompido.");
+
+
+    if(
+        window.papelUsuario ===
+        "jogador"
+    ){
+
+        if(
+            typeof window
+                .salvarFichaJogadorNoFirestore
+            !== "function"
+        ){
+
+            throw new Error(
+                "Sistema de fichas não carregado."
+            );
+
+        }
+
+
+        const sucesso =
+            await window
+                .salvarFichaJogadorNoFirestore(
+                    ficha
+                );
+
+
+        if(sucesso === false){
+
+            throw new Error(
+                "O Firestore recusou a ficha."
+            );
+
+        }
+
+
+        return;
+
     }
+
+
+    throw new Error(
+        "Usuário inválido."
+    );
+
+}
+
+
+async function importarArquivoFicha(
+    arquivo
+){
+
+    if(!arquivo){
+        return;
+    }
+
+
+    /*
+     * Um arquivo normal do sistema,
+     * mesmo com foto, deve ficar bem
+     * abaixo disso.
+     */
+    const LIMITE_ARQUIVO =
+        2 * 1024 * 1024;
+
+
+    if(
+        arquivo.size >
+        LIMITE_ARQUIVO
+    ){
+
+        throw new Error(
+            "O arquivo é grande demais."
+        );
+
+    }
+
+
+    const texto =
+        await arquivo.text();
+
+
+    let pacote;
+
+
+    try{
+
+        pacote =
+            JSON.parse(
+                texto
+            );
+
+
+    }catch{
+
+        throw new Error(
+            "O arquivo não contém uma ficha válida."
+        );
+
+    }
+
+
+    if(
+        !pacote
+        ||
+        pacote.formato !==
+            FORMATO_ARQUIVO_FICHA
+        ||
+        pacote.versao !==
+            VERSAO_ARQUIVO_FICHA
+        ||
+        !pacote.ficha
+        ||
+        typeof pacote.ficha
+            !== "object"
+        ||
+        Array.isArray(
+            pacote.ficha
+        )
+    ){
+
+        throw new Error(
+            "Formato de ficha inválido ou incompatível."
+        );
+
+    }
+
+
+    const dados =
+        JSON.parse(
+            JSON.stringify(
+                pacote.ficha
+            )
+        );
+
+
+    /*
+     * Mesmo se alguém alterar o arquivo
+     * manualmente, estes campos não
+     * serão aceitos na importação.
+     */
+    delete dados.id;
+    delete dados.dono;
+    delete dados.ordem;
+    delete dados.modificadoEm;
+    delete dados.atualizadoEm;
+    delete dados.fichaId;
+    delete dados.sorte;
+    delete dados.foto;
+
+
+    const usuario =
+        auth.currentUser;
+
+
+    if(!usuario){
+
+        throw new Error(
+            "Nenhum usuário autenticado."
+        );
+
+    }
+
+
+    /*
+     * Jogador sempre importa como
+     * ficha de jogador própria.
+     */
+    if(
+        window.papelUsuario ===
+        "jogador"
+    ){
+
+        dados.tipo =
+            "jogador";
+
+
+        dados.dono =
+            usuario.uid;
+
+    }
+
+
+    /*
+     * O Mestre preserva Jogador,
+     * NPC ou Criatura, porém fichas
+     * de jogador chegam sem dono.
+     */
+    else if(
+        window.papelUsuario ===
+        "mestre"
+    ){
+
+        dados.tipo =
+            normalizarTipoFicha(
+                dados.tipo
+            );
+
+
+        if(
+            dados.tipo ===
+            "jogador"
+        ){
+
+            dados.dono =
+                null;
+
+        }else{
+
+            delete dados.dono;
+
+        }
+
+    }
+
+
+    const novoId =
+        gerarNovoIdFicha();
+
+
+    dados.id =
+        novoId;
+
+
+    dados.modificadoEm =
+        Date.now();
+
+
+    dados.ordem =
+        banco.fichas.length;
+
+
+    /*
+     * A foto não fica no documento
+     * principal; entra na memória e
+     * depois vai para fotosFichas.
+     */
+    const foto =
+        typeof pacote.foto === "string"
+        &&
+        pacote.foto.startsWith(
+            "data:image/"
+        )
+        ? pacote.foto
+        : "";
+
+
+    if(
+        foto.length >
+        650000
+    ){
+
+        throw new Error(
+            "A foto contida na ficha é grande demais."
+        );
+
+    }
+
+
+    dados.foto =
+        foto;
+
+
+    const novaFicha =
+        normalizarFicha(
+            dados
+        );
+
+
+    const confirmar =
+        confirm(
+            "Importar esta ficha?\n\n" +
+            "Personagem: " +
+            (
+                novaFicha.personagem
+                ||
+                "Sem nome"
+            ) +
+            "\n" +
+            "Tipo: " +
+            (
+                novaFicha.tipo ===
+                "jogador"
+                ? "Jogador"
+
+                : novaFicha.tipo ===
+                    "npc"
+                    ? "NPC"
+                    : "Criatura"
+            ) +
+            "\n\n" +
+            "Será criada uma nova cópia."
+        );
+
+
+    if(!confirmar){
+        return;
+    }
+
+
+    /*
+     * Primeiro cria a ficha principal.
+     */
+    await salvarFichaImportadaNoFirestore(
+        novaFicha
+    );
+
+
+    /*
+     * Depois salva a foto no documento
+     * separado, se houver.
+     */
+    if(foto){
+
+        if(
+            typeof window
+                .salvarFotoFichaFirestore
+            !== "function"
+        ){
+
+            throw new Error(
+                "Sistema de fotos não carregado."
+            );
+
+        }
+
+
+        await window
+            .salvarFotoFichaFirestore(
+                novaFicha,
+                foto
+            );
+
+    }
+
+
+    /*
+     * Somente depois de o Firestore
+     * aceitar tudo ela entra na interface.
+     */
+    banco.fichas.push(
+        novaFicha
+    );
+
+
+    banco.atual =
+        novaFicha.id;
+
+
+    carregarFichaAtual();
+
+    atualizarBotaoExcluir();
+
+
+    alert(
+        "Ficha importada com sucesso!"
+    );
+
+}
+
+
+const botaoCompartilharFicha =
+    document.getElementById(
+        "compartilhar-ficha"
+    );
+
+
+if(botaoCompartilharFicha){
+
+    botaoCompartilharFicha
+        .addEventListener(
+            "click",
+            compartilharFicha
+        );
+
+}
+
+
+const botaoImportarFicha =
+    document.getElementById(
+        "importar-ficha"
+    );
+
+
+const inputArquivoFicha =
+    document.getElementById(
+        "arquivo-ficha"
+    );
+
+
+if(
+    botaoImportarFicha
+    &&
+    inputArquivoFicha
+){
+
+    botaoImportarFicha
+        .addEventListener(
+            "click",
+            () => {
+
+                inputArquivoFicha.value =
+                    "";
+
+
+                inputArquivoFicha.click();
+
+            }
+        );
+
+
+    inputArquivoFicha
+        .addEventListener(
+            "change",
+            async () => {
+
+                const arquivo =
+                    inputArquivoFicha
+                        .files[0];
+
+
+                if(!arquivo){
+                    return;
+                }
+
+
+                botaoImportarFicha.disabled =
+                    true;
+
+
+                botaoImportarFicha.textContent =
+                    "Importando...";
+
+
+                try{
+
+                    await importarArquivoFicha(
+                        arquivo
+                    );
+
+
+                }catch(erro){
+
+                    console.error(
+                        erro
+                    );
+
+
+                    alert(
+                        "Não foi possível importar a ficha.\n\n" +
+                        erro.message
+                    );
+
+
+                }finally{
+
+                    botaoImportarFicha.disabled =
+                        false;
+
+
+                    botaoImportarFicha.textContent =
+                        "Importar ficha";
+
+
+                    inputArquivoFicha.value =
+                        "";
+
+                }
+
+            }
+        );
+
 }
 
 function criarAssinaturaConteudoLocal(ficha){
