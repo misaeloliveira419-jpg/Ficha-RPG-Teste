@@ -496,7 +496,7 @@ function atualizarDeterminacao(){
     const periciaVontade = buscarPericia("vont");
     const treinoVontadeInput = periciaVontade? periciaVontade.querySelector(".treinamento") : null;
     const vontade = treinoVontadeInput ? Number(treinoVontadeInput.value) || 0 : 0;
-    const maxDeterminacao = 30 +(3 * presenca) + Math.floor(vontade / 2);
+    const maxDeterminacao = 20 + (2 * presenca) + Math.floor(vontade / 2);
     atualizarStatus(document.querySelectorAll(".status")[1], maxDeterminacao);
 }
 
@@ -700,7 +700,7 @@ function criarFichaNova(){
         sorte:0,
         status:[
         {atual:12,maximo:12},
-        {atual:33,maximo:33}
+        {atual:22,maximo:22}
 ],
         pericias: structuredClone(PERICIAS_PADRAO),
         conhecimentoEspecifico: "",
@@ -794,10 +794,6 @@ function carregarBanco(){
                     fichas:[]
                 };
                 const fichas = new Map();
-            /*
-             * Primeiro recuperamos todas
-             * as fichas do banco antigo.
-             */
             if(
                 Array.isArray(
                     dadosAntigos.fichas
@@ -992,8 +988,8 @@ function normalizarFicha(ficha){
     }]:[{
         atual:12,
         maximo:12
-    },{atual:33,
-        maximo:33
+    },{atual:22,
+        maximo:22
     }];
     ficha.status = statusPadrao.map((padrao, i) => {
         const s = status[i] || {};
