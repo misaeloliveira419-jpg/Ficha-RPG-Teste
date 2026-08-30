@@ -144,32 +144,18 @@
                         <span>/</span>
                         <input type="number" class="maximo-contador" value="8" min="1">
                     </div>
-
-                    <div class="atributo vermelho">
-                        <span class="des">Destreza (DES)</span>
-                        <input class="quadrado" type="number" min="0" max="4" value="1">
-                    </div>
-
                     <div class="atributo marrom">
-                        <span class="for">Força (FOR)</span>
+                        <span class="fis">Físico (FIS)</span>
                         <input class="quadrado" type="number" min="0" max="4" value="1">
                     </div>
-
                     <div class="atributo cinza">
                         <span class="int">Intelecto (INT)</span>
                         <input class="quadrado" type="number" min="0" max="4" value="1">
                     </div>
-
                     <div class="atributo amarelo">
                         <span class="pre">Presença (PRE)</span>
                         <input class="quadrado" type="number" min="0" max="4" value="1">
                     </div>
-
-                    <div class="atributo azul">
-                        <span class="vig">Vigor (VIG)</span>
-                        <input class="quadrado" type="number" min="0" max="4" value="1">
-                    </div>
-                  
                     <div class="deslocamento">
                       <span class="movimento">Deslocamento</span>
                       <div class="campo-unidade" id="campo-metro">
@@ -181,8 +167,7 @@
                         <input class="valor-quadrado" type="number" readonly>
                         <span class="medida-quadrado">q</span>
                       </div>
-                    </div>
-                  
+                    </div>  
                   <div class="atributo sorte" id="area-sorte">
                     <span id="sor">P. de Sorte</span>
                     <input id="quadrado-sorte" type="number" min="0" value="0">
@@ -214,9 +199,9 @@
                       <div class="barra">
                         <div class="preenchimento determinacao"></div>
                         <div class="texto">
-                          <input type="number" class="atual" value="33" min="0">
+                          <input type="number" class="atual" value="22" min="0">
                           /
-                          <input type="number" class="maximo" value="33" min="1">
+                          <input type="number" class="maximo" value="22" min="1">
                         </div>
                       </div>
                 </div>
@@ -258,27 +243,27 @@
                     <input type="number" class="maximo-contador" value="100" min="1">
                 </div>
 
-                <div class="pericia" data-id="acro"><span>Acrobacia</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="acro"><span>Acrobacia</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="ades"><span>Adestramento</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="art"><span>Artes</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="atle"><span>Atletismo</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="atle"><span>Atletismo</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="atual"><span>Atualidades</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="cien"><span>Ciências</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="cond"><span>Condução</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="crim"><span>Crime</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="cond"><span>Condução</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="crim"><span>Crime</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="diplo"><span>Diplomacia</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="engan"><span>Enganação</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="forti"><span>Fortitude</span><span class="atributo-pericia vig">(VIG)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="furtiv"><span>Furtividade</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="inici"><span>Iniciativa</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="forti"><span>Fortitude</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="furtiv"><span>Furtividade</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="inici"><span>Iniciativa</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="intim"><span>Intimidação</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="intui"><span>Intuição</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="invest"><span>Investigação</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="lut"><span>Luta</span><span class="atributo-pericia for">(FOR)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="lut"><span>Luta</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="med"><span>Medicina</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="percep"><span>Percepção</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="pont"><span>Pontaria</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
-                <div class="pericia" data-id="refl"><span>Reflexo</span><span class="atributo-pericia des">(DES)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="pont"><span>Pontaria</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
+                <div class="pericia" data-id="refl"><span>Reflexo</span><span class="atributo-pericia fis">(FIS)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="relig"><span>Religião</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="sedu"><span>Sedução</span><span class="atributo-pericia pre">(PRE)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>
                 <div class="pericia" data-id="sobrev"><span>Sobrevivência</span><span class="atributo-pericia int">(INT)</span><input class="treinamento" type="number" min="1" max="14" value="1"><input class="modificador" type="text" placeholder=""></div>

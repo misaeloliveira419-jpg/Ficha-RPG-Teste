@@ -1,27 +1,27 @@
 let carregandoFicha = false;
 
 const PERICIAS_PADRAO = [
-    { id:"acro", atributo:"(DES)", classe:"atributo-pericia des", treinamento:1, modificador:"" },
+    { id:"acro", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"ades", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
     { id:"art", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
-    { id:"atle", atributo:"(DES)", classe:"atributo-pericia des", treinamento:1, modificador:"" },
+    { id:"atle", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"atual", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
     { id:"cien", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
-    { id:"cond", atributo:"(DES)", classe:"atributo-pericia des", treinamento:1, modificador:"" },
-    { id:"crim", atributo:"(DES)", classe:"atributo-pericia des", treinamento:1, modificador:"" },
+    { id:"cond", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
+    { id:"crim", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"diplo", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
     { id:"engan", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
-    { id:"forti", atributo:"(VIG)", classe:"atributo-pericia vig", treinamento:1, modificador:"" },
-    { id:"furtiv", atributo:"(DES)", classe:"atributo-pericia des", treinamento:1, modificador:"" },
-    { id:"inici", atributo:"(DES)", classe:"atributo-pericia des", treinamento:1, modificador:"" },
+    { id:"forti", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
+    { id:"furtiv", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
+    { id:"inici", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"intim", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
     { id:"intui", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
     { id:"invest", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
-    { id:"lut", atributo:"(FOR)", classe:"atributo-pericia for", treinamento:1, modificador:"" },
+    { id:"lut", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"med", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
     { id:"percep", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
-    { id:"pont", atributo:"(DES)", classe:"atributo-pericia des", treinamento:1, modificador:"" },
-    { id:"refl", atributo:"(DES)", classe:"atributo-pericia des", treinamento:1, modificador:"" },
+    { id:"pont", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
+    { id:"refl", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"relig", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
     { id:"sedu", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
     { id:"sobrev", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
@@ -174,7 +174,7 @@ const atributos = document.querySelectorAll(".quadrado");
 atributos.forEach(input => {
     input.addEventListener("input", () => {
         let valor = Number(input.value);
-        if (valor > 4) input.value = 4;
+        if (valor > 3) input.value = 3;
         if (valor < 0) input.value = 0;
         atualizarFicha();
     });
@@ -432,11 +432,9 @@ botoesSecao.forEach(botao=>{
 });
 
 const listaAtributos = [
-    {texto:"DES", classe:"des"},
-    {texto:"FOR", classe:"for"},
+    {texto:"FIS", classe:"fis"},
     {texto:"INT", classe:"int"},
-    {texto:"PRE", classe:"pre"},
-    {texto:"VIG", classe:"vig"}
+    {texto:"PRE", classe:"pre"}
 ];
 
 document.querySelectorAll(".atributo-pericia").forEach(span=>{
@@ -449,7 +447,7 @@ document.querySelectorAll(".atributo-pericia").forEach(span=>{
 
         indice = (indice + 1) % listaAtributos.length;
 
-        span.classList.remove("des","for","int","pre","vig");
+        span.classList.remove("fis","int","pre");
 
         span.classList.add(listaAtributos[indice].classe);
 
@@ -472,19 +470,12 @@ function atualizarStatus(barra, novoMaximo){
 }
 
 function atualizarVida(){
-
-    const vigor = Number(document.querySelectorAll(".quadrado")[4].value);
-
+    const fisico = Number(document.querySelectorAll(".quadrado")[0].value);
     const periciaFortitude = buscarPericia("forti");
     const treinoFortitudeInput = periciaFortitude ? periciaFortitude.querySelector(".treinamento") : null;
     const bonus = treinoFortitudeInput ? Number(treinoFortitudeInput.value) || 0 : 0;
-
-    const maxVida = 10 + vigor + Math.floor(bonus/2);
-
-    atualizarStatus(
-        document.querySelectorAll(".status")[0],
-        maxVida
-    );
+    const maxVida = 10 + fisico + Math.floor(bonus/2);
+    atualizarStatus(document.querySelectorAll(".status")[0], maxVida);
 }
 
 function atualizarDeterminacao(){
@@ -492,9 +483,9 @@ function atualizarDeterminacao(){
     if(ficha && ficha.tipo === "criatura"){
         return;
     }
-    const presenca = Number(document.querySelectorAll(".quadrado")[3].value);
+    const presenca = Number(document.querySelectorAll(".quadrado")[2].value);
     const periciaVontade = buscarPericia("vont");
-    const treinoVontadeInput = periciaVontade? periciaVontade.querySelector(".treinamento") : null;
+    const treinoVontadeInput = periciaVontade? periciaVontade.querySelector(".treinamento"): null;
     const vontade = treinoVontadeInput ? Number(treinoVontadeInput.value) || 0 : 0;
     const maxDeterminacao = 20 + (2 * presenca) + Math.floor(vontade / 2);
     atualizarStatus(document.querySelectorAll(".status")[1], maxDeterminacao);
@@ -692,7 +683,7 @@ function criarFichaNova(){
         personagem: "Nova Ficha " + (banco.fichas.length + 1),
         foto:"",
         historia:"",
-        atributos:[1,1,1,1,1],
+        atributos:[1,1,1],
         deslocamento:{
             metros:9,
             quadrados:6
@@ -734,7 +725,7 @@ function criarFichaNova(){
         {nome:"",descricao:"",peso:0},
         {nome:"",descricao:"",peso:0}
         ],
-        maxAtributos: 8,
+        maxAtributos: 5,
         maxPericias: 100,
         historicoRolagens: [],
         rolagensSalvas: []
@@ -794,6 +785,10 @@ function carregarBanco(){
                     fichas:[]
                 };
                 const fichas = new Map();
+            /*
+             * Primeiro recuperamos todas
+             * as fichas do banco antigo.
+             */
             if(
                 Array.isArray(
                     dadosAntigos.fichas
@@ -964,7 +959,7 @@ function normalizarFicha(ficha){
     };
     
     const atributos = Array.isArray(ficha.atributos) ? ficha.atributos : [];
-    ficha.atributos = [0,1,2,3,4].map(i=>{
+    ficha.atributos = [0,1,2].map(i=>{
         let v = Number(atributos[i]);
         if(!Number.isFinite(v)) v = 1;
         return Math.min(5, Math.max(0, Math.round(v)));
@@ -1052,7 +1047,7 @@ function normalizarFicha(ficha){
             peso: Number(i && i.peso) || 0,
             marcado: !!(i && i.marcado)
         }));
-    ficha.maxAtributos = Number(ficha.maxAtributos) || 8;
+    ficha.maxAtributos = Number(ficha.maxAtributos) || 5;
     ficha.maxPericias = Number(ficha.maxPericias) || 100;
     ficha.historicoRolagens = Array.isArray(ficha.historicoRolagens) ? ficha.historicoRolagens: [];
     ficha.rolagensSalvas = Array.isArray(ficha.rolagensSalvas) ? ficha.rolagensSalvas: [];
@@ -1352,7 +1347,7 @@ function salvarFichaAtual(){
         }));
     const maxA = document.querySelector(".contador-atributos .maximo-contador");
     const maxP = document.querySelector(".contador-pericias .maximo-contador");
-    ficha.maxAtributos = maxA ? Number(maxA.value) : (ficha.maxAtributos ?? 8);
+    ficha.maxAtributos = maxA ? Number(maxA.value) : (ficha.maxAtributos ?? 5);
     ficha.maxPericias = maxP ? Number(maxP.value) : (ficha.maxPericias ?? 100);
     const assinaturaDepois = criarAssinaturaConteudoLocal(ficha);
     if(assinaturaAntes !== assinaturaDepois){
@@ -1448,7 +1443,7 @@ function carregarFichaAtual(){
     const contadorAtribMax = document.querySelector(".contador-atributos .maximo-contador");
     const contadorPericMax = document.querySelector(".contador-pericias .maximo-contador");
     if (contadorAtribMax) {
-        contadorAtribMax.value = ficha.maxAtributos ?? 8;
+        contadorAtribMax.value = ficha.maxAtributos ?? 5;
     }
     if (contadorPericMax) {
         contadorPericMax.value = ficha.maxPericias ?? 100;
@@ -1477,14 +1472,11 @@ function carregarFichaAtual(){
             return;
         }
         
-        const atributo =
-        p.querySelector(".atributo-pericia");
+        const atributo = p.querySelector(".atributo-pericia");
         
-        atributo.textContent =
-        dados.atributo;
+        atributo.textContent = dados.atributo;
         
-        atributo.className =
-        dados.classe;
+        atributo.className = dados.classe;
         
         const treinoInput =
         p.querySelector(".treinamento");
@@ -2089,13 +2081,13 @@ function atualizarContadorPericias(){
 }
 
 function atualizarContadorCarga() {
-    const forca = Number(document.querySelectorAll(".quadrado")[1].value);
+    const fisico = Number(document.querySelectorAll(".quadrado")[0].value);
     
     const periciaAtletismo = buscarPericia("atle");
     const treinoAtletismoInput = periciaAtletismo ? periciaAtletismo.querySelector(".treinamento") : null;
     const bonusCarga = treinoAtletismoInput ? Number(treinoAtletismoInput.value) || 0 : 0;
     
-    const maxCarga = 5 + 2 * forca + Math.floor(bonusCarga/4);
+    const maxCarga = 5 + 2 * fisico + Math.floor(bonusCarga/4);
 
     const contadorCarga = document.querySelector(".contador-carga .maximo-contador");
     if (contadorCarga) {
@@ -2357,7 +2349,7 @@ salvarFichaAtual = function() {
     salvarHistoria();
 };
 
-document.querySelectorAll(".quadrado")[1].addEventListener("input", () => {
+document.querySelectorAll(".quadrado")[0].addEventListener("input", () => {
     atualizarContadorCarga();
 });
 
@@ -2442,13 +2434,9 @@ function rolarDado(lados){
 }
 
 const INDICES_ATRIBUTOS = {
-
-    DES: 0,
-    FOR: 1,
-    INT: 2,
-    PRE: 3,
-    VIG: 4
-
+    FIS: 0,
+    INT: 1,
+    PRE: 2
 };
 
 function preencherPericiasRolagem(){
@@ -2524,18 +2512,9 @@ function obterDadosPericiaRolagem(pericia){
 
     if(!pericia) return null;
 
-    const atributoTexto =
-        pericia
-        .querySelector(".atributo-pericia")
-        ?.textContent
-        .replace("(", "")
-        .replace(")", "")
-        .trim()
-        .toUpperCase();
+    const atributoTexto = pericia.querySelector(".atributo-pericia")?.textContent.replace("(", "").replace(")", "").trim().toUpperCase();
 
-    const indice =
-        INDICES_ATRIBUTOS[
-            atributoTexto
+    const indice = INDICES_ATRIBUTOS[ atributoTexto
         ];
 
     if(indice === undefined){
@@ -2566,20 +2545,9 @@ function obterDadosPericiaRolagem(pericia){
         .trim();
 
     return {
-
-        id: pericia.dataset.id,
-
-        nome,
-
-        atributo:
-            atributoTexto,
-
-        valorAtributo,
-
-        valorPericia
-
+        id: pericia.dataset.id, nome,
+        atributo: atributoTexto, valorAtributo, valorPericia
     };
-
 }
 
 function atualizarConfiguracaoPericiaRolagem(){
@@ -2727,13 +2695,7 @@ function rolarTestePericia(){
     quantidadeDados < 1
     ){
 
-    quantidadeDados =
-        valorAtributo === 0
-        ? 2
-        : Math.max(
-            1,
-            valorAtributo
-        );
+    quantidadeDados = valorAtributo === 0 ? 2: Math.max(1, valorAtributo);
     }
 
     
@@ -2758,12 +2720,8 @@ function rolarTestePericia(){
         valorPericia;
     }
     
-    const desvantagem =
-    valorAtributo === 0;
-
-
+    const desvantagem = valorAtributo === 0;
     const resultados = [];
-
     for(
         let i = 0;
         i < quantidadeDados;
@@ -2824,41 +2782,17 @@ function rolarTestePericia(){
 
         nome,
 
-        atributo,
-
-        valorAtributo,
-
-        valorPericia:
-        valorPericiaTeste,
-
-        resultados,
-
-        resultado:
-            resultadoFinal,
-
-        sucesso,
-
-        desvantagem
-
+        atributo, valorAtributo,
+        valorPericia: valorPericiaTeste, resultados,
+        resultado: resultadoFinal, sucesso, desvantagem
     });
-
-
     ultimaRolagem = {
-
         tipo: "pericia",
-
-        periciaId:
-            dadosPericia.id,
-
+        periciaId: dadosPericia.id,
         nome,
-
         atributo,
-        
         quantidadeDados,
-
-        valorPericia:
-        valorPericiaTeste
-
+        valorPericia: valorPericiaTeste
     };
 
 }

@@ -710,20 +710,15 @@ main{
     color:black;
 }
 
-.vermelho{color:#d10000;}
 .marrom{color:#9c4f00;}
 .cinza{color:#777;}
 .amarelo{color:#b5b500;}
-.azul{color:#008b8b;}
 .sorte, #sor{color:rgb(90,0,225)}
-
 .verde{color:#00aa1b;}
 
-.des{color:#d10000;}
-.for{color:#9c4f00;}
+.fis{color:#9c4f00;}
 .int{color:#777;}
 .pre{color:#b5b500;}
-.vig{color:#008b8b;}
 
 .status{
 

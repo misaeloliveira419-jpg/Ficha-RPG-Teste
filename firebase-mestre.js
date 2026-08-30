@@ -372,13 +372,7 @@ async function salvarFichaMestreNoFirestore(
 
     const batch =
         db.batch();
-
-
-    /*
-     * Primeiro elimina possíveis
-     * versões desse mesmo ID em
-     * coleções erradas.
-     */
+    
     if(tipo !== "jogador"){
 
         batch.delete(
@@ -1156,12 +1150,7 @@ if(typeof window.carregarFotosDasFichas === "function"){
                 fichasCarregadas
 
         };
-
-
-        /*
-         * Só AGORA desativamos o banco
-         * local do Mestre.
-         */
+        
         window.mestreUsandoFirestoreDireto =
             true;
 
