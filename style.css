@@ -433,7 +433,7 @@ main{
 
     width:55px;
     height:55px;
-    border:2px solid rgb(90,0,225);
+    border:2px solid rgb(90,0,175);
     border-radius:6px;
     text-align:center;
     font-size:28px;
@@ -441,7 +441,7 @@ main{
     font-family:"Times New Roman", Times, serif;
     background:black;
     outline:none;
-    background-image: linear-gradient(rgb(150,0,250),rgb(90,0,225),rgb(60,0,175));
+    background-image: linear-gradient(rgb(150,0,250),rgb(90,0,175),rgb(50,0,125));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -720,7 +720,7 @@ main{
 
 #sor{
     
-    background-image: linear-gradient(rgb(150,0,250),rgb(90,0,225),rgb(60,0,175));
+    background-image: linear-gradient(rgb(150,0,250),rgb(90,0,175),rgb(50,0,125));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
