@@ -20,15 +20,13 @@ body{
 }
 
 #tela-login{
+    
     position:fixed;
     inset:0;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     background:#080808;
-
     z-index:99999;
 }
 
@@ -38,108 +36,83 @@ body{
     display:flex;
     flex-direction:column;
     gap:15px;
-
 }
-
 
 #area-login h1,
 #area-cadastro h1{
 
     margin:0 0 10px;
-
     text-align:center;
 
 }
 
-
 #area-login input,
 #area-cadastro input{
 
-    height:42px;
-
+    height:46px;
     padding:0 12px;
-
-    font-size:16px;
+    font-size:24px;
 
 }
-
 
 #botao-login,
 #botao-cadastro{
 
-    height:44px;
-
-    font-size:17px;
+    height:48px;
+    font-size:18px;
     font-weight:bold;
-
     cursor:pointer;
-
 }
-
 
 .botao-secundario-login{
 
     height:40px;
-
     background:#222;
     color:white;
-
     border:1px solid white;
-
-    font-size:15px;
-
+    font-size:16px;
     cursor:pointer;
-
 }
-
 
 .botao-secundario-login:hover{
 
     background:#333;
-
 }
-
 
 #erro-login,
 #erro-cadastro{
 
     min-height:20px;
-
     text-align:center;
-
 }
 
 .caixa-login{
-    width:320px;
-
+    
+    width:600px;
     display:flex;
     flex-direction:column;
     gap:15px;
-
     padding:30px;
-
     border:2px solid white;
-
     background:#111;
 }
 
 .caixa-login h1{
+    
     margin:0 0 10px;
-
     text-align:center;
 }
 
 .caixa-login input{
+    
     height:42px;
-
     padding:0 12px;
-
     font-size:16px;
 }
 
 #botao-login{
+    
     height:44px;
-
     font-size:17px;
     font-weight:bold;
 
@@ -147,9 +120,61 @@ body{
 }
 
 #erro-login{
+    
     min-height:20px;
-
     text-align:center;
+}
+
+.campo-senha{
+
+    position:relative;
+
+    width:100%;
+
+}
+
+
+.campo-senha input{
+
+    width:100%;
+
+    padding-right:50px;
+
+}
+
+
+.botao-mostrar-senha{
+
+    position:absolute;
+
+    top:50%;
+    right:8px;
+
+    transform:translateY(-50%);
+
+    width:36px;
+    height:36px;
+
+    border:none;
+
+    background:transparent;
+    color:white;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+
+.botao-mostrar-senha:hover{
+
+    opacity:0.7;
+
 }
 
 .ficha{

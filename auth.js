@@ -29,6 +29,73 @@ const campoSenha =
         "login-senha"
     );
 
+const botaoMostrarLoginSenha =
+    document.getElementById(
+        "mostrar-login-senha"
+    );
+
+
+if(
+    botaoMostrarLoginSenha
+    &&
+    campoSenha
+){
+
+    botaoMostrarLoginSenha
+        .addEventListener(
+            "click",
+            () => {
+
+                const senhaEstaVisivel =
+                    campoSenha.type ===
+                    "text";
+
+
+                if(senhaEstaVisivel){
+
+                    campoSenha.type =
+                        "password";
+
+                    botaoMostrarLoginSenha
+                        .textContent =
+                        "👁";
+
+                    botaoMostrarLoginSenha
+                        .setAttribute(
+                            "aria-label",
+                            "Mostrar senha"
+                        );
+
+                    botaoMostrarLoginSenha
+                        .title =
+                        "Mostrar senha";
+
+                }else{
+
+                    campoSenha.type =
+                        "text";
+
+                    botaoMostrarLoginSenha
+                        .textContent =
+                        "🙈";
+
+                    botaoMostrarLoginSenha
+                        .setAttribute(
+                            "aria-label",
+                            "Ocultar senha"
+                        );
+
+                    botaoMostrarLoginSenha
+                        .title =
+                        "Ocultar senha";
+
+                }
+
+            }
+        );
+
+}
+
 const botaoLogin =
     document.getElementById(
         "botao-login"
