@@ -334,24 +334,30 @@ if(typeof window.carregarFotosDasFichas === "function"){
 
         window.jogadorAguardandoFirestore =
             false;
+        
+        const temCompartilhamentoPendente =
+    new URLSearchParams(
+        window.location.search
+    )
+    .has("s");
 
 
-        /*
-         * Usuário novo sem nenhuma ficha:
-         * cria automaticamente a primeira.
-         */
-        if(
-            banco.fichas.length === 0
-        ){
+if(
+    banco.fichas.length === 0
+    &&
+    !temCompartilhamentoPendente
+){
 
-            criarFichaNova();
+    criarFichaNova();
 
-        }
+}
 
 
         carregarFichaAtual();
 
         atualizarBotaoExcluir();
+        
+        window.dispatchEvent(new Event("fichas-firestore-prontas"));
 
 
     }catch(erro){

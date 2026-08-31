@@ -874,6 +874,8 @@ if(typeof window.carregarFotosDasFichas === "function"){
          * anteriormente recebam uma ordem.
          */
         await salvarOrdemFichasMestre();
+        
+        window.dispatchEvent(new Event("fichas-firestore-prontas"));
 
 
     }catch(erro){

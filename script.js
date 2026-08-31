@@ -891,17 +891,24 @@ function fichaAtual(){
     return banco.fichas.find(f=>f.id===banco.atual);
 }
 
-const FORMATO_ARQUIVO_FICHA =
+const FORMATO_COMPARTILHAMENTO =
     "ficha-rpg-a-realidade";
 
 
-const VERSAO_ARQUIVO_FICHA =
+const VERSAO_COMPARTILHAMENTO =
     1;
 
 
+let compartilhamentoEmProcessamento =
+    false;
+
+
+let compartilhamentoJaVerificado =
+    false;
+
+
 /*
- * Define em qual coleção está
- * o documento principal da ficha.
+ * Identifica a coleção da ficha.
  */
 function obterColecaoCompartilhamento(
     tipo
@@ -919,6 +926,7 @@ function obterColecaoCompartilhamento(
             return "fichasCriaturas";
 
         default:
+
             throw new Error(
                 "Tipo de ficha inválido."
             );
@@ -929,40 +937,8 @@ function obterColecaoCompartilhamento(
 
 
 /*
- * Remove caracteres que não são
- * apropriados para nomes de arquivo.
- */
-function limparNomeArquivoFicha(
-    nome
-){
-
-    const nomeLimpo =
-        String(
-            nome || "Ficha"
-        )
-        .replace(
-            /[\\/:*?"<>|]/g,
-            "-"
-        )
-        .replace(
-            /\s+/g,
-            " "
-        )
-        .trim()
-        .slice(
-            0,
-            80
-        );
-
-
-    return nomeLimpo || "Ficha";
-
-}
-
-
-/*
- * Gera um ID que ainda não existe
- * na sessão atual.
+ * Gera um ID novo para uma ficha
+ * importada.
  */
 function gerarNovoIdFicha(){
 
@@ -989,11 +965,8 @@ function gerarNovoIdFicha(){
 
 
 /*
- * Faz uma gravação imediata antes
- * do compartilhamento.
- *
- * Assim o arquivo é criado a partir
- * da versão mais recente do Firestore.
+ * Força o salvamento da ficha antes
+ * de criar a cópia compartilhada.
  */
 async function garantirFichaSalvaParaCompartilhar(
     ficha
@@ -1056,7 +1029,7 @@ async function garantirFichaSalvaParaCompartilhar(
         if(sucesso === false){
 
             throw new Error(
-                "A ficha não pôde ser salva."
+                "Não foi possível salvar a ficha."
             );
 
         }
@@ -1073,32 +1046,44 @@ async function garantirFichaSalvaParaCompartilhar(
 
 }
 
-
-/*
- * Busca a versão oficial da ficha
- * diretamente do Firestore.
- */
-async function montarArquivoCompartilhavel(
-    fichaAtualLocal
+async function criarCompartilhamentoFicha(
+    fichaLocal
 ){
 
+    const usuario =
+        auth.currentUser;
+
+
+    if(!usuario){
+
+        throw new Error(
+            "Nenhum usuário autenticado."
+        );
+
+    }
+
+
     await garantirFichaSalvaParaCompartilhar(
-        fichaAtualLocal
+        fichaLocal
     );
 
 
-    const id =
+    const idFicha =
         String(
-            fichaAtualLocal.id
+            fichaLocal.id
         );
 
 
     const colecao =
         obterColecaoCompartilhamento(
-            fichaAtualLocal.tipo
+            fichaLocal.tipo
         );
 
 
+    /*
+     * Busca diretamente a versão oficial
+     * que acabou de ser salva no Firestore.
+     */
     const [
         documentoFicha,
         documentoFoto
@@ -1109,14 +1094,14 @@ async function montarArquivoCompartilhavel(
             .collection(
                 colecao
             )
-            .doc(id)
+            .doc(idFicha)
             .get(),
 
         db
             .collection(
                 "fotosFichas"
             )
-            .doc(id)
+            .doc(idFicha)
             .get()
 
     ]);
@@ -1125,13 +1110,13 @@ async function montarArquivoCompartilhavel(
     if(!documentoFicha.exists){
 
         throw new Error(
-            "A ficha não existe no Firestore."
+            "A ficha não foi encontrada no banco."
         );
 
     }
 
 
-    const ficha =
+    const fichaCompartilhada =
         JSON.parse(
             JSON.stringify(
                 documentoFicha.data()
@@ -1140,23 +1125,94 @@ async function montarArquivoCompartilhavel(
 
 
     /*
-     * Informações internas nunca
-     * viajam para outra pessoa.
+     * Tudo isso pertence somente
+     * à ficha original.
      */
-    delete ficha.id;
-    delete ficha.dono;
-    delete ficha.ordem;
-    delete ficha.modificadoEm;
-    delete ficha.atualizadoEm;
-    delete ficha.fichaId;
-    delete ficha.sorte;
+    delete fichaCompartilhada.id;
+
+    delete fichaCompartilhada.dono;
+
+    delete fichaCompartilhada.ordem;
+
+    delete fichaCompartilhada.modificadoEm;
+
+    delete fichaCompartilhada.atualizadoEm;
+
+    delete fichaCompartilhada.fichaId;
+
+    delete fichaCompartilhada.foto;
+
+    /*
+     * Segurança redundante.
+     *
+     * A coleção principal já não deve
+     * conter Sorte, mas removemos mesmo
+     * assim.
+     */
+    delete fichaCompartilhada.sorte;
 
 
-    let foto =
-        "";
+    /*
+     * Jogador não pode gerar uma cópia
+     * de NPC ou Criatura.
+     */
+    if(
+        window.papelUsuario ===
+        "jogador"
+    ){
+
+        fichaCompartilhada.tipo =
+            "jogador";
+
+    }
 
 
-    if(documentoFoto.exists){
+    /*
+     * Auto-ID do próprio Firestore.
+     *
+     * É este pequeno código que irá
+     * no link.
+     */
+    const referencia =
+        db
+            .collection(
+                "compartilhamentosFichas"
+            )
+            .doc();
+
+
+    const idCompartilhamento =
+        referencia.id;
+
+
+    await referencia.set({
+
+        formato:
+            FORMATO_COMPARTILHAMENTO,
+
+        versao:
+            VERSAO_COMPARTILHAMENTO,
+
+        criadoPor:
+            usuario.uid,
+
+        criadoEm:
+            firebase.firestore
+                .FieldValue
+                .serverTimestamp(),
+
+        ficha:
+            fichaCompartilhada
+
+    });
+
+
+    /*
+     * A foto é copiada separadamente.
+     */
+    if(
+        documentoFoto.exists
+    ){
 
         const dadosFoto =
             documentoFoto.data();
@@ -1164,97 +1220,185 @@ async function montarArquivoCompartilhavel(
 
         if(
             typeof dadosFoto.foto
-            === "string"
+                === "string"
+            &&
+            dadosFoto.foto
         ){
 
-            foto =
-                dadosFoto.foto;
+            await db
+                .collection(
+                    "fotosCompartilhamentos"
+                )
+                .doc(
+                    idCompartilhamento
+                )
+                .set({
+
+                    foto:
+                        dadosFoto.foto,
+
+                    criadoPor:
+                        usuario.uid,
+
+                    criadoEm:
+                        firebase.firestore
+                            .FieldValue
+                            .serverTimestamp()
+
+                });
 
         }
 
     }
 
 
-    return {
-
-        formato:
-            FORMATO_ARQUIVO_FICHA,
-
-        versao:
-            VERSAO_ARQUIVO_FICHA,
-
-        exportadoEm:
-            new Date()
-                .toISOString(),
-
-        ficha:
-            ficha,
-
-        foto:
-            foto
-
-    };
+    return idCompartilhamento;
 
 }
+
 async function compartilharFicha(){
+
+    /*
+     * Primeiro leva todos os campos
+     * atuais da tela para o objeto.
+     */
     salvarFichaAtual();
-    const ficha = fichaAtual();
+
+
+    const ficha =
+        fichaAtual();
+
+
     if(!ficha){
-        alert("Nenhuma ficha selecionada.");
+
+        alert(
+            "Nenhuma ficha selecionada."
+        );
+
         return;
+
     }
-    const botao = document.getElementById("compartilhar-ficha");
+
+
+    const botao =
+        document.getElementById(
+            "compartilhar-ficha"
+        );
+
+
     if(botao){
-        botao.disabled = true;
-        botao.textContent = "Preparando...";
+
+        botao.disabled =
+            true;
+
+
+        botao.textContent =
+            "Criando link...";
+
     }
+
+
     try{
-        const pacote = await montarArquivoCompartilhavel(ficha);
-        const nomePersonagem = pacote.ficha.personagem || "Ficha";
-        const nomeArquivo = limparNomeArquivoFicha(nomePersonagem)+".ficharpg";
-        const conteudo = JSON.stringify(pacote, null, 2);
-        const arquivo = new File([conteudo], nomeArquivo, {
-            type: "application/json"
-        });
-        const podeCompartilhar = typeof navigator.share === "function" && (typeof navigator.canShare !== "function" || navigator.canShare({
-            files:[arquivo]
-        }));
-        if(podeCompartilhar){
-            await navigator.share({
-                title: "Ficha de " + nomePersonagem,
-                text: "Ficha de RPG",
-                files:[arquivo]
-            });
-            return;
+
+        const idCompartilhamento =
+            await criarCompartilhamentoFicha(
+                ficha
+            );
+
+
+        /*
+         * Mantém somente a localização
+         * atual do site + pequeno ID.
+         */
+        const link =
+            window.location.origin
+            +
+            window.location.pathname
+            +
+            "?s="
+            +
+            idCompartilhamento;
+
+
+        /*
+         * Tenta copiar automaticamente.
+         */
+        try{
+
+            await navigator
+                .clipboard
+                .writeText(
+                    link
+                );
+
+
+            alert(
+                "Link da ficha copiado!\n\n" +
+                link
+            );
+
+
+        }catch{
+
+            /*
+             * WebCode/WebViews podem não
+             * permitir Clipboard API.
+             */
+            prompt(
+                "Copie o link da ficha:",
+                link
+            );
+
         }
-        const url = URL.createObjectURL(arquivo);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = nomeArquivo;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        setTimeout(() => {
-            URL.revokeObjectURL(url);
-        }, 1000);
-        alert("Seu navegador não permite compartilhar " + "o arquivo diretamente.\n\n" + "A ficha foi salva como arquivo para você enviar.");
-    }
-    catch(erro){
-        if(erro?.name === "AbortError"){
-            return;
-        }
-        console.error(erro);
-        alert("Não foi possível compartilhar a ficha.\n\n" + erro.message);
-    }
-    finally{
+
+
+    }catch(erro){
+
+        console.error(
+            erro
+        );
+
+
+        alert(
+            "Não foi possível compartilhar a ficha.\n\n" +
+            erro.message
+        );
+
+
+    }finally{
+
         if(botao){
-            botao.disabled = false;
-            botao.textContent = "Compartilhar ficha";
+
+            botao.disabled =
+                false;
+
+
+            botao.textContent =
+                "Compartilhar ficha";
+
         }
+
     }
+
 }
 
-async function salvarFichaImportadaNoFirestore(
+const botaoCompartilharFicha =
+    document.getElementById(
+        "compartilhar-ficha"
+    );
+
+
+if(botaoCompartilharFicha){
+
+    botaoCompartilharFicha
+        .addEventListener(
+            "click",
+            compartilharFicha
+        );
+
+}
+
+async function salvarFichaCompartilhadaImportada(
     ficha
 ){
 
@@ -1315,7 +1459,7 @@ async function salvarFichaImportadaNoFirestore(
         if(sucesso === false){
 
             throw new Error(
-                "O Firestore recusou a ficha."
+                "A ficha não pôde ser criada."
             );
 
         }
@@ -1332,82 +1476,82 @@ async function salvarFichaImportadaNoFirestore(
 
 }
 
-
-async function importarArquivoFicha(
-    arquivo
+async function importarCompartilhamento(
+    idCompartilhamento
 ){
 
-    if(!arquivo){
-        return;
+    const usuario =
+        auth.currentUser;
+
+
+    if(!usuario){
+
+        throw new Error(
+            "Faça login antes de importar a ficha."
+        );
+
     }
 
 
-    /*
-     * Um arquivo normal do sistema,
-     * mesmo com foto, deve ficar bem
-     * abaixo disso.
-     */
-    const LIMITE_ARQUIVO =
-        2 * 1024 * 1024;
+    const [
+        documentoCompartilhamento,
+        documentoFoto
+    ] =
+    await Promise.all([
+
+        db
+            .collection(
+                "compartilhamentosFichas"
+            )
+            .doc(
+                idCompartilhamento
+            )
+            .get(),
+
+        db
+            .collection(
+                "fotosCompartilhamentos"
+            )
+            .doc(
+                idCompartilhamento
+            )
+            .get()
+
+    ]);
 
 
     if(
-        arquivo.size >
-        LIMITE_ARQUIVO
+        !documentoCompartilhamento.exists
     ){
 
         throw new Error(
-            "O arquivo é grande demais."
+            "Este compartilhamento não existe."
         );
 
     }
 
 
-    const texto =
-        await arquivo.text();
-
-
-    let pacote;
-
-
-    try{
-
-        pacote =
-            JSON.parse(
-                texto
-            );
-
-
-    }catch{
-
-        throw new Error(
-            "O arquivo não contém uma ficha válida."
-        );
-
-    }
+    const pacote =
+        documentoCompartilhamento.data();
 
 
     if(
         !pacote
         ||
         pacote.formato !==
-            FORMATO_ARQUIVO_FICHA
+            FORMATO_COMPARTILHAMENTO
         ||
         pacote.versao !==
-            VERSAO_ARQUIVO_FICHA
+            VERSAO_COMPARTILHAMENTO
         ||
         !pacote.ficha
         ||
         typeof pacote.ficha
             !== "object"
-        ||
-        Array.isArray(
-            pacote.ficha
-        )
     ){
 
         throw new Error(
-            "Formato de ficha inválido ou incompatível."
+            "Este compartilhamento é inválido."
         );
 
     }
@@ -1422,36 +1566,31 @@ async function importarArquivoFicha(
 
 
     /*
-     * Mesmo se alguém alterar o arquivo
-     * manualmente, estes campos não
-     * serão aceitos na importação.
+     * Nunca confiamos em campos
+     * administrativos vindos da cópia.
      */
     delete dados.id;
+
     delete dados.dono;
+
     delete dados.ordem;
+
     delete dados.modificadoEm;
+
     delete dados.atualizadoEm;
+
     delete dados.fichaId;
-    delete dados.sorte;
+
     delete dados.foto;
 
-
-    const usuario =
-        auth.currentUser;
-
-
-    if(!usuario){
-
-        throw new Error(
-            "Nenhum usuário autenticado."
-        );
-
-    }
+    delete dados.sorte;
 
 
     /*
-     * Jogador sempre importa como
-     * ficha de jogador própria.
+     * JOGADOR:
+     *
+     * sempre recebe uma ficha Jogador
+     * pertencente ao próprio UID.
      */
     if(
         window.papelUsuario ===
@@ -1469,9 +1608,12 @@ async function importarArquivoFicha(
 
 
     /*
-     * O Mestre preserva Jogador,
-     * NPC ou Criatura, porém fichas
-     * de jogador chegam sem dono.
+     * MESTRE:
+     *
+     * preserva Jogador/NPC/Criatura.
+     *
+     * Uma ficha de jogador compartilhada
+     * chega sem dono.
      */
     else if(
         window.papelUsuario ===
@@ -1501,12 +1643,8 @@ async function importarArquivoFicha(
     }
 
 
-    const novoId =
-        gerarNovoIdFicha();
-
-
     dados.id =
-        novoId;
+        gerarNovoIdFicha();
 
 
     dados.modificadoEm =
@@ -1517,29 +1655,29 @@ async function importarArquivoFicha(
         banco.fichas.length;
 
 
-    /*
-     * A foto não fica no documento
-     * principal; entra na memória e
-     * depois vai para fotosFichas.
-     */
-    const foto =
-        typeof pacote.foto === "string"
-        &&
-        pacote.foto.startsWith(
-            "data:image/"
-        )
-        ? pacote.foto
-        : "";
+    let foto =
+        "";
 
 
-    if(
-        foto.length >
-        650000
-    ){
+    if(documentoFoto.exists){
 
-        throw new Error(
-            "A foto contida na ficha é grande demais."
-        );
+        const dadosFoto =
+            documentoFoto.data();
+
+
+        if(
+            typeof dadosFoto.foto
+                === "string"
+            &&
+            dadosFoto.foto.startsWith(
+                "data:image/"
+            )
+        ){
+
+            foto =
+                dadosFoto.foto;
+
+        }
 
     }
 
@@ -1554,9 +1692,20 @@ async function importarArquivoFicha(
         );
 
 
-    const confirmar =
+    const tipoExibido =
+
+        novaFicha.tipo === "jogador"
+            ? "Jogador"
+
+        : novaFicha.tipo === "npc"
+            ? "NPC"
+
+        : "Criatura";
+
+
+    const resposta =
         confirm(
-            "Importar esta ficha?\n\n" +
+            "Uma ficha foi compartilhada com você!\n\n" +
             "Personagem: " +
             (
                 novaFicha.personagem
@@ -1565,65 +1714,45 @@ async function importarArquivoFicha(
             ) +
             "\n" +
             "Tipo: " +
-            (
-                novaFicha.tipo ===
-                "jogador"
-                ? "Jogador"
-
-                : novaFicha.tipo ===
-                    "npc"
-                    ? "NPC"
-                    : "Criatura"
-            ) +
+            tipoExibido +
             "\n\n" +
-            "Será criada uma nova cópia."
+            "Deseja criar uma cópia desta ficha?"
         );
 
 
-    if(!confirmar){
+    if(!resposta){
+
+        /*
+         * Se for uma conta completamente
+         * nova e não houver nenhuma ficha,
+         * damos uma ficha vazia normal.
+         */
+        if(
+            banco.fichas.length === 0
+        ){
+
+            criarFichaNova();
+
+            carregarFichaAtual();
+
+        }
+
+
         return;
+
     }
 
 
     /*
-     * Primeiro cria a ficha principal.
+     * Primeiro cria o documento principal.
      */
-    await salvarFichaImportadaNoFirestore(
+    await salvarFichaCompartilhadaImportada(
         novaFicha
     );
 
 
     /*
-     * Depois salva a foto no documento
-     * separado, se houver.
-     */
-    if(foto){
-
-        if(
-            typeof window
-                .salvarFotoFichaFirestore
-            !== "function"
-        ){
-
-            throw new Error(
-                "Sistema de fotos não carregado."
-            );
-
-        }
-
-
-        await window
-            .salvarFotoFichaFirestore(
-                novaFicha,
-                foto
-            );
-
-    }
-
-
-    /*
-     * Somente depois de o Firestore
-     * aceitar tudo ela entra na interface.
+     * Coloca imediatamente na interface.
      */
     banco.fichas.push(
         novaFicha
@@ -1634,9 +1763,58 @@ async function importarArquivoFicha(
         novaFicha.id;
 
 
+    /*
+     * Foto é persistida separadamente.
+     */
+    if(
+        foto
+        &&
+        typeof window
+            .salvarFotoFichaFirestore
+        === "function"
+    ){
+
+        try{
+
+            await window
+                .salvarFotoFichaFirestore(
+                    novaFicha,
+                    foto
+                );
+
+
+        }catch(erroFoto){
+
+            console.error(
+                erroFoto
+            );
+
+
+            alert(
+                "A ficha foi importada, mas a foto não pôde ser salva."
+            );
+
+        }
+
+    }
+
+
     carregarFichaAtual();
 
     atualizarBotaoExcluir();
+
+
+    /*
+     * Remove ?s=... depois da importação.
+     *
+     * Assim atualizar a página não tenta
+     * importar novamente.
+     */
+    window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+    );
 
 
     alert(
@@ -1645,117 +1823,156 @@ async function importarArquivoFicha(
 
 }
 
+async function verificarCompartilhamentoPendente(){
 
-const botaoCompartilharFicha =
-    document.getElementById(
-        "compartilhar-ficha"
-    );
+    if(
+        compartilhamentoEmProcessamento
+        ||
+        compartilhamentoJaVerificado
+    ){
 
+        return;
 
-if(botaoCompartilharFicha){
-
-    botaoCompartilharFicha
-        .addEventListener(
-            "click",
-            compartilharFicha
-        );
-
-}
+    }
 
 
-const botaoImportarFicha =
-    document.getElementById(
-        "importar-ficha"
-    );
-
-
-const inputArquivoFicha =
-    document.getElementById(
-        "arquivo-ficha"
-    );
-
-
-if(
-    botaoImportarFicha
-    &&
-    inputArquivoFicha
-){
-
-    botaoImportarFicha
-        .addEventListener(
-            "click",
-            () => {
-
-                inputArquivoFicha.value =
-                    "";
-
-
-                inputArquivoFicha.click();
-
-            }
+    const parametros =
+        new URLSearchParams(
+            window.location.search
         );
 
 
-    inputArquivoFicha
-        .addEventListener(
-            "change",
-            async () => {
-
-                const arquivo =
-                    inputArquivoFicha
-                        .files[0];
-
-
-                if(!arquivo){
-                    return;
-                }
-
-
-                botaoImportarFicha.disabled =
-                    true;
-
-
-                botaoImportarFicha.textContent =
-                    "Importando...";
-
-
-                try{
-
-                    await importarArquivoFicha(
-                        arquivo
-                    );
-
-
-                }catch(erro){
-
-                    console.error(
-                        erro
-                    );
-
-
-                    alert(
-                        "Não foi possível importar a ficha.\n\n" +
-                        erro.message
-                    );
-
-
-                }finally{
-
-                    botaoImportarFicha.disabled =
-                        false;
-
-
-                    botaoImportarFicha.textContent =
-                        "Importar ficha";
-
-
-                    inputArquivoFicha.value =
-                        "";
-
-                }
-
-            }
+    const idCompartilhamento =
+        parametros.get(
+            "s"
         );
+
+
+    if(!idCompartilhamento){
+
+        compartilhamentoJaVerificado =
+            true;
+
+        return;
+
+    }
+
+
+    /*
+     * IDs automáticos do Firestore
+     * não precisam de nenhum outro
+     * caractere especial.
+     */
+    if(
+        !/^[A-Za-z0-9_-]{10,40}$/
+            .test(
+                idCompartilhamento
+            )
+    ){
+
+        compartilhamentoJaVerificado =
+            true;
+
+
+        alert(
+            "Link de ficha inválido."
+        );
+
+
+        return;
+
+    }
+
+
+    if(
+        !auth.currentUser
+        ||
+        !window.papelUsuario
+    ){
+
+        /*
+         * Espera o login.
+         */
+        return;
+
+    }
+
+
+    if(
+        window.papelUsuario === "mestre"
+        &&
+        !window.mestreUsandoFirestoreDireto
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        window.papelUsuario === "jogador"
+        &&
+        !window.jogadorUsandoFirestoreDireto
+    ){
+
+        return;
+
+    }
+
+
+    compartilhamentoEmProcessamento =
+        true;
+
+
+    compartilhamentoJaVerificado =
+        true;
+
+
+    try{
+
+        await importarCompartilhamento(
+            idCompartilhamento
+        );
+
+
+    }catch(erro){
+
+        console.error(
+            erro
+        );
+
+
+        alert(
+            "Não foi possível abrir a ficha compartilhada.\n\n" +
+            erro.message
+        );
+
+
+    }finally{
+
+        compartilhamentoEmProcessamento =
+            false;
+
+    }
+    window.addEventListener(
+    "fichas-firestore-prontas",
+    verificarCompartilhamentoPendente
+);
+
+window.addEventListener(
+    "usuario-autenticado",
+    () => {
+
+        /*
+         * Normalmente ainda estará
+         * carregando as fichas nesse
+         * momento. Se já estiver pronto,
+         * entretanto, podemos verificar.
+         */
+        verificarCompartilhamentoPendente();
+
+    }
+);
 
 }
 
