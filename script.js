@@ -1741,19 +1741,11 @@ async function importarCompartilhamento(
         return;
 
     }
-
-
-    /*
-     * Primeiro cria o documento principal.
-     */
+    
     await salvarFichaCompartilhadaImportada(
         novaFicha
     );
-
-
-    /*
-     * Coloca imediatamente na interface.
-     */
+    
     banco.fichas.push(
         novaFicha
     );
@@ -1954,28 +1946,11 @@ async function verificarCompartilhamentoPendente(){
             false;
 
     }
-    window.addEventListener(
-    "fichas-firestore-prontas",
-    verificarCompartilhamentoPendente
-);
-
-window.addEventListener(
-    "usuario-autenticado",
-    () => {
-
-        /*
-         * Normalmente ainda estará
-         * carregando as fichas nesse
-         * momento. Se já estiver pronto,
-         * entretanto, podemos verificar.
-         */
-        verificarCompartilhamentoPendente();
-
-    }
-);
-
 }
-
+window.addEventListener("fichas-firestore-prontas", verificarCompartilhamentoPendente);
+window.addEventListener("usuario-autenticado",() => {
+        verificarCompartilhamentoPendente();
+});
 function criarAssinaturaConteudoLocal(ficha){
     const copia = JSON.parse(JSON.stringify(ficha));
     delete copia.modificadoEm;
