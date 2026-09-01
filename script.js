@@ -19,7 +19,7 @@ const PERICIAS_PADRAO = [
     { id:"invest", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
     { id:"lut", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"med", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
-    { id:"percep", atributo:"(PRE)", classe:"atributo-pericia pre", treinamento:1, modificador:"" },
+    { id:"percep", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
     { id:"pont", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"refl", atributo:"(FIS)", classe:"atributo-pericia fis", treinamento:1, modificador:"" },
     { id:"relig", atributo:"(INT)", classe:"atributo-pericia int", treinamento:1, modificador:"" },
