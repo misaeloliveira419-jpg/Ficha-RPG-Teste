@@ -891,10 +891,20 @@ function fichaAtual(){
     return banco.fichas.find(f=>f.id===banco.atual);
 }
 
-const FORMATO_COMPARTILHAMENTO = "ficha-rpg-a-realidade";
-const VERSAO_COMPARTILHAMENTO = 1;
-let compartilhamentoEmProcessamento = false;
-let compartilhamentoJaVerificado = false;
+const FORMATO_COMPARTILHAMENTO =
+    "ficha-rpg-a-realidade";
+
+
+const VERSAO_COMPARTILHAMENTO =
+    1;
+
+
+let compartilhamentoEmProcessamento =
+    false;
+
+
+let compartilhamentoJaVerificado =
+    false;
 
 function obterColecaoCompartilhamento(
     tipo
@@ -921,6 +931,11 @@ function obterColecaoCompartilhamento(
 
 }
 
+
+/*
+ * Gera um ID novo para uma ficha
+ * importada.
+ */
 function gerarNovoIdFicha(){
 
     let id =
@@ -944,6 +959,11 @@ function gerarNovoIdFicha(){
 
 }
 
+
+/*
+ * Força o salvamento da ficha antes
+ * de criar a cópia compartilhada.
+ */
 async function garantirFichaSalvaParaCompartilhar(
     ficha
 ){
@@ -1099,6 +1119,11 @@ async function criarCompartilhamentoFicha(
             )
         );
 
+
+    /*
+     * Tudo isso pertence somente
+     * à ficha original.
+     */
     delete fichaCompartilhada.id;
 
     delete fichaCompartilhada.dono;
@@ -1113,8 +1138,20 @@ async function criarCompartilhamentoFicha(
 
     delete fichaCompartilhada.foto;
 
+    /*
+     * Segurança redundante.
+     *
+     * A coleção principal já não deve
+     * conter Sorte, mas removemos mesmo
+     * assim.
+     */
     delete fichaCompartilhada.sorte;
 
+
+    /*
+     * Jogador não pode gerar uma cópia
+     * de NPC ou Criatura.
+     */
     if(
         window.papelUsuario ===
         "jogador"
@@ -1125,6 +1162,13 @@ async function criarCompartilhamentoFicha(
 
     }
 
+
+    /*
+     * Auto-ID do próprio Firestore.
+     *
+     * É este pequeno código que irá
+     * no link.
+     */
     const referencia =
         db
             .collection(
@@ -1158,6 +1202,166 @@ async function criarCompartilhamentoFicha(
 
     });
 
+
+    /*
+     * A foto é copiada separadamente.
+     */
+    if(
+        documentoFoto.exists
+    ){
+
+        const dadosFoto =
+            documentoFoto.data();
+
+
+        if(
+            typeof dadosFoto.foto
+                === "string"
+            &&
+            dadosFoto.foto
+        ){
+
+            await db
+                .collection(
+                    "fotosCompartilhamentos"
+                )
+                .doc(
+                    idCompartilhamento
+                )
+                .set({
+
+                    foto:
+                        dadosFoto.foto,
+
+                    criadoPor:
+                        usuario.uid,
+
+                    criadoEm:
+                        firebase.firestore
+                            .FieldValue
+                            .serverTimestamp()
+
+                });
+
+        }
+
+    }
+
+
+    return idCompartilhamento;
+
+}
+
+async function compartilharFicha(){
+
+    /*
+     * Primeiro leva todos os campos
+     * atuais da tela para o objeto.
+     */
+    salvarFichaAtual();
+
+
+    const ficha =
+        fichaAtual();
+
+
+    if(!ficha){
+
+        alert(
+            "Nenhuma ficha selecionada."
+        );
+
+        return;
+
+    }
+
+
+    const botao =
+        document.getElementById(
+            "compartilhar-ficha"
+        );
+
+
+    if(botao){
+
+        botao.disabled =
+            true;
+
+
+        botao.textContent =
+            "Criando link...";
+
+    }
+
+
+    try{
+
+        const idCompartilhamento =
+            await criarCompartilhamentoFicha(
+                ficha
+            );
+
+
+        /*
+         * Mantém somente a localização
+         * atual do site + pequeno ID.
+         */
+        const link =
+            window.location.origin
+            +
+            window.location.pathname
+            +
+            "?s="
+            +
+            idCompartilhamento;
+
+
+        /*
+         * Tenta copiar automaticamente.
+         */
+        try{
+
+            await navigator
+                .clipboard
+                .writeText(
+                    link
+                );
+
+
+            alert(
+                "Link da ficha copiado!\n\n" +
+                link
+            );
+
+
+        }catch{
+
+            /*
+             * WebCode/WebViews podem não
+             * permitir Clipboard API.
+             */
+            prompt(
+                "Copie o link da ficha:",
+                link
+            );
+
+        }
+
+
+    }catch(erro){
+
+        console.error(
+            erro
+        );
+
+
+        alert(
+            "Não foi possível compartilhar a ficha.\n\n" +
+            erro.message
+        );
+
+
+    }finally{
 
         if(botao){
 
@@ -2473,7 +2677,8 @@ function atualizarListaFichas(){
                 div.classList.add("arrastando");
                 try{
                     div.setPointerCapture(e.pointerId);
-                }catch(erro){}
+                }
+                catch(erro){}
             },300);
         });
         div.addEventListener("pointermove",(e)=>{
