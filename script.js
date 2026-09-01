@@ -474,7 +474,7 @@ function atualizarVida(){
     const periciaFortitude = buscarPericia("forti");
     const treinoFortitudeInput = periciaFortitude ? periciaFortitude.querySelector(".treinamento") : null;
     const bonus = treinoFortitudeInput ? Number(treinoFortitudeInput.value) || 0 : 0;
-    const maxVida = 10 + fisico + Math.floor(bonus/2);
+    const maxVida = 15 + fisico + Math.floor(bonus/2);
     atualizarStatus(document.querySelectorAll(".status")[0], maxVida);
 }
 
@@ -690,7 +690,7 @@ function criarFichaNova(){
         },
         sorte:0,
         status:[
-        {atual:12,maximo:12},
+        {atual:16,maximo:16},
         {atual:22,maximo:22}
 ],
         pericias: structuredClone(PERICIAS_PADRAO),
@@ -812,11 +812,11 @@ function normalizarFicha(ficha){
     
     const status = Array.isArray(ficha.status) ? ficha.status: [];
     const statusPadrao = ficha.tipo === "criatura" ? [{
-        atual:12,
-        maximo:12
+        atual:16,
+        maximo:16
     }]:[{
-        atual:12,
-        maximo:12
+        atual:16,
+        maximo:16
     },{atual:22,
         maximo:22
     }];
@@ -906,10 +906,6 @@ let compartilhamentoEmProcessamento =
 let compartilhamentoJaVerificado =
     false;
 
-
-/*
- * Identifica a coleção da ficha.
- */
 function obterColecaoCompartilhamento(
     tipo
 ){
@@ -2572,35 +2568,68 @@ document.getElementById("deletar-ficha").onclick = async () =>{
 
 let fichaArrastando = null;
 let indiceOriginal = -1;
+let filtroTipoFicha = "jogador";
+
+document.querySelectorAll(".filtro-tipo-ficha").forEach(botao=>{
+    botao.addEventListener("click", ()=>{
+        if(window.papelUsuario !== "mestre") return;
+
+        filtroTipoFicha = botao.dataset.tipo;
+
+        document.querySelectorAll(".filtro-tipo-ficha").forEach(outro=>{
+            outro.classList.toggle("ativo", outro === botao);
+        });
+
+        atualizarListaFichas();
+
+        const scroll = document.getElementById("lista-fichas-scroll");
+        if(scroll) scroll.scrollTop = 0;
+    });
+});
 
 function atualizarListaFichas(){
 
     const lista = document.getElementById("lista-fichas");
-
+    const filtros = document.getElementById("filtros-tipo-ficha");
     lista.innerHTML = "";
-
-    banco.fichas.forEach((ficha)=>{
-
+    if(filtros){
+        filtros.style.display = window.papelUsuario === "mestre" ? "flex" : "none";
+    }
+    const fichasVisiveis = window.papelUsuario === "mestre" ? banco.fichas.filter(ficha => ficha.tipo === filtroTipoFicha): banco.fichas;
+    fichasVisiveis.forEach((ficha)=>{
         const div = document.createElement("div");
-
         div.className = "ficha-lista";
-
         div.dataset.id = ficha.id;
-
         div.style.position = "relative";
-
+        const conteudoFicha = document.createElement("div");
+        conteudoFicha.className = "conteudo-ficha-lista";
+        const areaFoto = document.createElement("div");
+        areaFoto.className = "foto-ficha-lista";
+        if(typeof ficha.foto === "string" && ficha.foto){
+            const imagem = document.createElement("img");
+            imagem.src = ficha.foto;
+            imagem.alt = "Foto de " + (ficha.personagem || "personagem");
+            areaFoto.appendChild(imagem);
+        }
+        else{
+            const semFoto = document.createElement("span");
+            semFoto.textContent = "?";
+            areaFoto.appendChild(semFoto);
+        }
         const nomeFicha = document.createElement("span");
         nomeFicha.className = "nome-ficha";
         nomeFicha.textContent = ficha.personagem || "Sem nome";
+        conteudoFicha.appendChild(areaFoto);
+        conteudoFicha.appendChild(nomeFicha);
         const botaoExcluir = document.createElement("button");
         botaoExcluir.className = "excluir-ficha";
         botaoExcluir.textContent = "🗑";
         if(window.papelUsuario === "jogador"){
             botaoExcluir.style.display = "none";
         }
-        div.appendChild(nomeFicha);
+        div.appendChild(conteudoFicha);
         div.appendChild(botaoExcluir);
-        div.querySelector(".nome-ficha").onclick = ()=>{
+        conteudoFicha.onclick = ()=>{
             banco.atual = ficha.id;
             salvarBanco();
             carregarFichaAtual();
@@ -2684,16 +2713,25 @@ function pararArrastar(){
     segurando = false;
     div.classList.remove("arrastando");
     div.style.transform = "";
-    const novaOrdem = [];
-    document.querySelectorAll("#lista-fichas .ficha-lista").forEach(card => {
+    const novaOrdemVisivel = [];
+    document.querySelectorAll("#lista-fichas .ficha-lista").forEach(card=>{
         const id = Number(card.dataset.id);
-        const ficha = banco.fichas.find(f => f.id === id);
-        if (ficha) {
-            novaOrdem.push(ficha);
-        }
+        const ficha = banco.fichas.find(f=>f.id === id);
+        if(ficha) novaOrdemVisivel.push(ficha);
     });
-    banco.fichas = novaOrdem;
-    banco.fichas.forEach((ficha, indice) => {
+    if(window.papelUsuario === "mestre"){
+        let indiceVisivel = 0;
+        banco.fichas = banco.fichas.map(ficha=>{
+            if(ficha.tipo === filtroTipoFicha){
+                return novaOrdemVisivel[indiceVisivel++] || ficha;
+            }
+            return ficha;
+        });
+    }
+    else{
+        banco.fichas = novaOrdemVisivel;
+    }
+    banco.fichas.forEach((ficha, indice)=>{
         ficha.ordem = indice;
     });
     salvarBanco();
@@ -2714,37 +2752,71 @@ div.addEventListener("pointercancel",pararArrastar);
 
 }
 
+const abaCampanhas = document.getElementById("aba-campanhas");
+const abaFichas = document.getElementById("aba-fichas");
+const conteudoCampanhas = document.getElementById("conteudo-campanhas");
+const conteudoFichas = document.getElementById("conteudo-fichas");
+
+function abrirAbaBiblioteca(aba){
+    const mostrandoFichas = aba === "fichas";
+
+    conteudoFichas.style.display = mostrandoFichas ? "block" : "none";
+    conteudoCampanhas.style.display = mostrandoFichas ? "none" : "block";
+
+    abaFichas.classList.toggle("ativa", mostrandoFichas);
+    abaCampanhas.classList.toggle("ativa", !mostrandoFichas);
+
+    if(mostrandoFichas){
+        atualizarListaFichas();
+    }
+}
+
+if(abaFichas){
+    abaFichas.addEventListener("click", ()=>abrirAbaBiblioteca("fichas"));
+}
+
+if(abaCampanhas){
+    abaCampanhas.addEventListener("click", ()=>abrirAbaBiblioteca("campanhas"));
+}
+
 function abrirListaFichas(){
-
     salvarFichaAtual();
-
-    atualizarListaFichas();
-
+    if(window.papelUsuario === "mestre"){
+        filtroTipoFicha = "jogador";
+        document.querySelectorAll(".filtro-tipo-ficha").forEach(botao=>{
+            botao.classList.toggle("ativo", botao.dataset.tipo === "jogador");
+        });
+}
+    abrirAbaBiblioteca("fichas");
     document.querySelector("header").style.display = "none";
-
-    document.querySelector("main").style.display="none";
-
-    document.querySelector(".historia").style.display="none";
-
-    document.getElementById("tela-fichas").style.display="block";
-    
-    document.getElementById("painel-rolagens").style.display="none";
-
+    document.querySelector("main").style.display = "none";
+    document.querySelector(".historia").style.display = "none";
+    document.getElementById("tela-fichas").style.display = "block";
+    document.getElementById("painel-rolagens").style.display = "none";
 }
 
 function fecharListaFichas(){
-
     document.querySelector("header").style.display = "block";
-
     document.querySelector("main").style.display="grid";
-
     document.querySelector(".historia").style.display="block";
-
     document.getElementById("tela-fichas").style.display="none";
-    
     document.getElementById("painel-rolagens").style.display ="block";
 
 }
+
+window.addEventListener("fichas-firestore-prontas", ()=>{
+    const parametros = new URLSearchParams(window.location.search);
+    if(parametros.has("s")){
+        return;
+    }
+    abrirListaFichas();
+});
+
+document.getElementById("abrir-campanhas").onclick=()=>{
+    menuLateral.style.display="none";
+    abrirListaFichas();
+    abrirAbaBiblioteca("campanhas");
+};
 
 document.getElementById("abrir-lista").onclick=()=>{
     menuLateral.style.display="none";

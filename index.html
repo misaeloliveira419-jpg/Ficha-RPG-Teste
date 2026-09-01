@@ -3,7 +3,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.4, minimum-scale=0.4, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.4, maximum-scale=1.0">
   <link rel="stylesheet" href="style.css"/>
     <title>Ficha RPG</title>
 </head>
@@ -83,7 +83,14 @@
     </div>
 
         <button id="btn-menu">☰</button>
-
+        <div id="menu-lateral">
+          <button id="abrir-campanhas">Campanhas</button>
+          <button id="abrir-lista">Todas as suas fichas</button>
+          <button id="criar-ficha">Criar ficha</button>
+          <button id="deletar-ficha">Deletar ficha</button>
+          <button id="compartilhar-ficha">Compartilhar ficha</button>
+          <button id="sair-conta">Sair da conta</button>
+        </div>
     </header>
 
     <div class="bloco historia">
@@ -99,30 +106,30 @@
 
     </div>
 
-    <div id="menu-lateral">
-
-        <button id="abrir-lista">Todas as suas fichas</button>
-
-        <button id="criar-ficha">Criar ficha</button>
-
-        <button id="deletar-ficha">Deletar ficha</button>
-
-        <button id="compartilhar-ficha">Compartilhar ficha</button>
-
-        <button id="sair-conta">Sair da conta</button>
-    </div>
-
     <div id="tela-fichas">
+      <div id="abas-biblioteca">
+        <button id="aba-campanhas" class="aba-biblioteca" type="button">CAMPANHAS</button>
+        <button id="aba-fichas" class="aba-biblioteca ativa" type="button">FICHAS</button>
+      </div>
 
-    <h1>SUAS FICHAS</h1>
+      <div id="conteudo-campanhas" class="conteudo-biblioteca" style="display:none;">
+        <div id="lista-campanhas"></div>
+      </div>
 
-    <div id="lista-fichas"></div>
+      <div id="conteudo-fichas" class="conteudo-biblioteca">
+        <div id="filtros-tipo-ficha" style="display:none;">
+          <button class="filtro-tipo-ficha ativo" data-tipo="jogador" type="button">JOGADORES</button>
+          <button class="filtro-tipo-ficha" data-tipo="npc" type="button">NPC's</button>
+          <button class="filtro-tipo-ficha" data-tipo="criatura" type="button">CRIATURAS</button>
+        </div>
+        <div id="lista-fichas-scroll">
+            <div id="lista-fichas"></div>
+        </div>
+        <button id="nova-ficha-lista">+</button>
+      </div>
 
-    <button id="nova-ficha-lista">+</button>
-
-    <button id="voltar-ficha">← Voltar</button>
-
-</div>
+      <button id="voltar-ficha">← Voltar</button>
+    </div>
 
     <main>
 
@@ -184,9 +191,9 @@
                         <div class="preenchimento vida"></div>
 
                         <div class="texto">
-                            <input type="number" class="atual" value="10" min="0">
+                            <input type="number" class="atual" value="16" min="0">
                             /
-                            <input type="number" class="maximo" value="10" min="1">
+                            <input type="number" class="maximo" value="16" min="1">
                         </div>
                     </div>
                 </div>
