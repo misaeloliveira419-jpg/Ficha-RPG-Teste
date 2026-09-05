@@ -1158,11 +1158,12 @@ main{
 #abas-biblioteca{
     width:100%;
     display:flex;
+    justify-content:center;
     margin-bottom:30px;
 }
 
 .aba-biblioteca{
-    width:50%;
+    width:100%;
     height:70px;
     border:3px solid white;
     background:black;
@@ -1174,28 +1175,14 @@ main{
     transition:background .15s,color .15s;
 }
 
-#aba-campanhas{
-    border-right-width:1.5px;
-}
-#aba-fichas{
-    border-left-width:1.5px;
-}
 
 .aba-biblioteca:hover{
-    background:rgb(45,45,45);
-}
-
-.aba-biblioteca.ativa,
-.aba-biblioteca.ativa:hover{
-    background:white;
-    color:black;
+    background:rgb(255,255,255);
+    color: black;
 }
 
 .conteudo-biblioteca{
     width:100%;
-}
-#conteudo-campanhas{
-    min-height:500px;
 }
 
 #filtros-tipo-ficha{
@@ -1562,6 +1549,40 @@ main{
     flex-grow:1;
     min-height:0;
     overflow-y:auto;
+    overflow-x:hidden;
+    padding-right:16px;
+    touch-action:pan-y;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:auto;
+    scrollbar-color:white rgb(25,25,25);
+}
+
+
+#historico-rolagens::-webkit-scrollbar{
+
+    width:32px;
+}
+
+
+#historico-rolagens::-webkit-scrollbar-track{
+
+    background:rgb(25,25,25);
+    border-left:1px solid white;
+}
+
+
+#historico-rolagens::-webkit-scrollbar-thumb{
+
+    background:white;
+    border:4px solid rgb(25,25,25);
+    border-radius:10px;
+}
+
+
+#historico-rolagens::-webkit-scrollbar-thumb:hover{
+
+    background:rgb(190,190,190);
 }
 
 #painel-rolagens h1{
@@ -2087,3 +2108,121 @@ main{
     box-shadow:
         0 0 12px currentColor;
 }
+
+/* ========================================
+   HISTÓRICO VISUAL DE ROLAGENS
+======================================== */
+.registro-historico-visual{
+    gap:10px;
+    padding:14px 4px 16px;
+}
+.cabecalho-registro-historico{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+.foto-historico-personagem{
+    width:54px;
+    height:54px;
+    min-width:54px;
+    border:2px solid white;
+    background:black;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+}
+.foto-historico-personagem img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+.identidade-historico-personagem{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+}
+.nome-historico-personagem{
+    font-size:21px !important;
+    line-height:1.05;
+    overflow-wrap:anywhere;
+}
+.rotulo-historico-personagem{
+    font-size:12px;
+    opacity:.72;
+    letter-spacing:.7px;
+}
+.corpo-registro-historico{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    padding-left:66px;
+}
+.teste-historico{
+    font-size:18px !important;
+}
+.linha-dados-historico,
+.linha-resultado-historico{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:5px;
+    font-size:17px;
+}
+.etiqueta-historico{
+    opacity:.72;
+    margin-right:2px;
+}
+.separador-historico{
+    opacity:.65;
+}
+.historico-numero{
+    font-weight:800;
+    font-size:19px !important;
+}
+.resultado-final-historico,
+.resultado-total-soma-historico{
+    font-size:22px !important;
+}
+.categoria-historico{
+    margin-left:4px;
+    font-size:19px !important;
+}
+.bonus-historico{
+    font-weight:700;
+}
+
+/* Cores por nível de sucesso. */
+.historico-numero.nivel-desastre,
+.categoria-historico.nivel-desastre{
+    color:#d10000;
+}
+.historico-numero.nivel-fracasso,
+.categoria-historico.nivel-fracasso{
+    color:white;
+}
+.historico-numero.nivel-normal,
+.categoria-historico.nivel-normal{
+    color:#39a8ff;
+}
+.historico-numero.nivel-bom,
+.categoria-historico.nivel-bom{
+    color:#d6aa00;
+}
+.historico-numero.nivel-extremo,
+.categoria-historico.nivel-extremo{
+    color:#00aa1b;
+}
+
+/* Em testes de soma, cada número usa a cor do tipo de dado. */
+.dado-soma-historico.dado-d4{ color:#d6aa00; }
+.dado-soma-historico.dado-d6{ color:#ff5fa2; }
+.dado-soma-historico.dado-d8{ color:#9b59ff; }
+.dado-soma-historico.dado-d10{ color:#00aa1b; }
+.dado-soma-historico.dado-d12{ color:#ff8c00; }
+.dado-soma-historico.dado-d20{ color:#d10000; }
+.dado-soma-historico.dado-d30{ color:#39a8ff; }
+.dado-soma-historico.dado-d100{ color:white; }

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, minimum-scale=0.4, maximum-scale=1.0">
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="styles/style.css"/>
     <title>Ficha RPG</title>
 </head>
 <body>
@@ -84,7 +84,6 @@
 
         <button id="btn-menu">☰</button>
         <div id="menu-lateral">
-          <button id="abrir-campanhas">Campanhas</button>
           <button id="abrir-lista">Todas as suas fichas</button>
           <button id="criar-ficha">Criar ficha</button>
           <button id="deletar-ficha">Deletar ficha</button>
@@ -108,7 +107,6 @@
 
     <div id="tela-fichas">
       <div id="abas-biblioteca">
-        <button id="aba-campanhas" class="aba-biblioteca" type="button">CAMPANHAS</button>
         <button id="aba-fichas" class="aba-biblioteca ativa" type="button">FICHAS</button>
       </div>
 
@@ -430,6 +428,11 @@
 
             <div id="historico-rolagens"></div>
 
+            <div id="area-historico-mestre" hidden>
+                <h1>HISTÓRICO DO MESTRE</h1>
+                <div id="historico-mestre"></div>
+            </div>
+
         </section>
 
     </div>
@@ -444,17 +447,17 @@
 
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
 
-<script src="firebase-config.js"></script>
+<script src="scripts/firebase-config.js"></script>
 
-<script src="auth.js"></script>
+<script src="scripts/auth.js"></script>
   
-<script src="script.js"></script>
+<script src="scripts/script.js"></script>
   
-<script src="firebase-fotos.js"></script>
+<script src="scripts/firebase-fotos.js"></script>
 
-<script src="firebase-fichas.js"></script>
+<script src="scripts/firebase-fichas.js"></script>
   
-<script src="firebase-mestre.js"></script> 
-
+<script src="scripts/firebase-mestre.js"></script>
+  
 </body>
 </html>

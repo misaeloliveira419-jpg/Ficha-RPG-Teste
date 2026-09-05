@@ -491,6 +491,7 @@ async function salvarFichaMestreNoFirestore(
 
     await batch.commit();
 
+
 }
 
 window.salvarFichaMestreNoFirestore =

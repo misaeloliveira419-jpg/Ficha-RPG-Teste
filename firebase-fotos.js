@@ -355,7 +355,6 @@ async function(
     ficha.foto =
         fotoFinal;
 
-
     return fotoFinal;
 
 };
